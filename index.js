@@ -29,8 +29,8 @@ function createCustomElement(definedElement) {
             const cssRules = [];
 
             for (const rule of style.sheet.cssRules) {
-                rule.selectorText = rule.selectorText.replace(/:host/g, selector);
                 rule.selectorText = rule.selectorText.replace(/:host\((.+)\)/g, `${selector}$1`);
+                rule.selectorText = rule.selectorText.replace(/:host/g, selector);
                 const re = new RegExp(`^(?!${selector})(.+?)\\s*`,'g');
                 rule.selectorText = rule.selectorText.replace(re, `${selector} $1`);
                 cssRules.push(rule);
@@ -78,8 +78,8 @@ function createCustomElement(definedElement) {
 
         #attach(content) {
             if (useShadow) {
-                const shadowRoot = this.attachShadow({ mode: 'closed' });
-                shadowRoot.appendChild(content);
+                this.attachShadow({ mode: 'open' });
+                this.shadowRoot.appendChild(content);
             } else {
                 const slotElements = content.querySelectorAll('slot');
                 if (slotElements.length === 0 && this.childNodes.length > 0) {
