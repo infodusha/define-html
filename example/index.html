@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>define-html example</title>
+    <link rel="preload" href="header.html" as="fetch" crossorigin />
+    <link rel="preload" href="content.html" as="fetch" crossorigin />
+    <script src="../index.js" type="module"></script>
+</head>
+<body>
+    <header>
+        <h1>Hello there</h1>
+    </header>
+    <app-header name="Andrei" admin>extra data</app-header>
+    <app-header name="Vika"></app-header>
+    <app-content></app-content>
+</body>
+</html>

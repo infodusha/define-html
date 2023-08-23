@@ -1,0 +1,23 @@
+<template data-selector="app-header" data-shadow>
+    <header>
+        My name is: <b data-attr="name"></b>
+        <span data-if="admin">
+            I AM THE ADMIN
+        </span>
+        <span data-if="admin" data-if-not>
+            I am the user
+        </span>
+        <slot></slot>
+    </header>
+</template>
+
+<style>
+    :host {
+        display: inline-block;
+    }
+
+    header {
+        background-color: wheat;
+        padding: 1rem;
+    }
+</style>
