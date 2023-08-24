@@ -32,12 +32,12 @@ So later you can use include your template with:
 * Make conditional elements
 * Optionally enable shadow root
 * Partial style encapsulation (when not a shadow root mode)
+* Watch for attribute changes from js
 
 # TODO
 
-* Watch for attribute changes (from js)
-* Extended script support
 * Full style encapsulation (when not a shadow root mode)
+* Extended script support
 * Full slot support
 
 # License

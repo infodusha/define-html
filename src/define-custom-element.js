@@ -1,5 +1,6 @@
 import {ErrorStackModifier} from './error-stack-modifier.js';
 
+
 export function defineCustomElement(definedElement) {
     const template = definedElement.querySelector('template');
     const useShadow = template.hasAttribute('data-shadow');
@@ -12,14 +13,29 @@ export function defineCustomElement(definedElement) {
     }
 
     class DefineHTMLElement extends HTMLElement {
+        #observedProperties = new Set();
+
+        #attributeChangeObserver;
+
         constructor() {
             super();
+            const onAttributeChange = this.#onAttributeChange.bind(this);
+            this.#attributeChangeObserver = new MutationObserver(onAttributeChange);
             this.#attach();
-            this.#setAttrs();
             if (useShadow) {
                 this.#setShadowStyles();
             }
+            this.#observeAttributes();
             this.#execScripts();
+        }
+
+        connectedCallback() {
+            this.#attributeChangeObserver.observe(this, { attributes: true });
+        }
+
+        disconnectedCallback() {
+            this.#observedProperties.clear();
+            this.#attributeChangeObserver.disconnect()
         }
 
         #getContent() {
@@ -56,17 +72,15 @@ export function defineCustomElement(definedElement) {
             }
         }
 
-        #setAttrs() {
+        #applyAttr(name, value) {
             const root = useShadow ? this.shadowRoot : this;
-            for (const name of this.getAttributeNames()) {
-                const value = this.getAttribute(name);
-                for (const element of root.querySelectorAll(`[data-attr='${name}']`)) {
-                    if (element.childNodes) {
-                        // TODO handle case when there are already nodes inside
-                    }
-                    element.innerText = value;
+            for (const element of root.querySelectorAll(`[data-attr='${name}']`)) {
+                if (element.childNodes) {
+                    // TODO handle case when there are already nodes inside
                 }
+                element.innerText = value;
             }
+            // TODO add support for data-if and data-if-not when changed via js
         }
 
         #setShadowStyles() {
@@ -93,6 +107,46 @@ export function defineCustomElement(definedElement) {
                         newStack.applyToRow((r) => r.replace('DefineHTMLElement.eval', selector));
                         console.error(newStack.toString());
                     }
+                }
+            }
+        }
+
+        #observeAttributes() {
+            for (const name of this.getAttributeNames()) {
+                this.#makeObservedProperty(name);
+            }
+        }
+
+        #makeObservedProperty(name) {
+            if (this.#observedProperties.has(name)) {
+                return;
+            }
+            let value = this.getAttribute(name);
+            this.#applyAttr(name, value);
+            Object.defineProperty(this, name, {
+                get() {
+                    return value;
+                },
+                set(newValue) {
+                    value = newValue;
+                    this.#applyAttr(name, newValue);
+                },
+                enumerable: true,
+                configurable: true,
+            });
+            this.#observedProperties.add(name);
+        }
+
+        #onAttributeChange(mutationList) {
+            for (const mutation of mutationList) {
+                if (mutation.type !== 'attributes') {
+                    throw new Error('Unexpected');
+                }
+                const { attributeName } = mutation;
+                if (this.#observedProperties.has(attributeName)) {
+                    this[attributeName] = this.getAttribute(attributeName);
+                } else {
+                    this.#makeObservedProperty(attributeName);
                 }
             }
         }
