@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/infodusha/define-html/compare/v1.1.0...v1.2.0) (2023-08-24)
+
+
+### Features
+
+* refactor css part & add wat to make global style tag ([1fe29eb](https://github.com/infodusha/define-html/commit/1fe29eb0fd1256a18e3e6cd8329831cf0b4f15a7))
+
 ## [1.1.0](https://github.com/infodusha/define-html/compare/v1.0.1...v1.1.0) (2023-08-24)
 
 
