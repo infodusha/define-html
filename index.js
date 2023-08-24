@@ -98,7 +98,8 @@ function createCustomElement(definedElement) {
 
         #setAttrs() {
             const root = useShadow ? this.shadowRoot : this;
-            for (const { name, value } of this.attributes) {
+            for (const name of this.getAttributeNames()) {
+                const value = this.getAttribute(name);
                 for (const element of root.querySelectorAll(`[data-attr='${name}']`)) {
                     if (element.childNodes) {
                         // TODO handle case when there are already nodes inside
