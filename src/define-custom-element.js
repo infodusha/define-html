@@ -55,19 +55,56 @@ export function defineCustomElement(definedElement) {
                 this.attachShadow({ mode: 'open' });
                 this.shadowRoot.appendChild(content);
             } else {
-                const slotElements = content.querySelectorAll('slot');
-                if (slotElements.length === 0 && this.childNodes.length > 0) {
-                    throw new Error(`No slot found for ${selector}`)
-                }
-                // TODO probably handle full slot support
-                for (const element of slotElements) {
-                    if (this.childNodes.length > 0) {
-                        element.before(...this.childNodes);
-                    }
-                    element.remove();
-                }
+                this.#emulateSlots(content);
                 this.appendChild(content);
             }
+        }
+
+        #emulateSlots(content) {
+            const elements = content.querySelectorAll('slot');
+
+            if (elements.length === 0 && this.childNodes.length > 0) {
+                throw new Error(`No slot found for ${selector}`)
+            }
+
+            const namedSlotPlaces = Array.from(this.querySelectorAll('[slot]'));
+            const childNodesAndElements =  this.#getChildNodesAndElements();
+            this.innerHTML = '';
+
+            for (const slot of elements) {
+                let children;
+                if (slot.hasAttribute('name')) {
+                    const slotName =  slot.getAttribute('name');
+                    children = namedSlotPlaces.filter(element => element.getAttribute('slot') === slotName);
+                } else {
+                    children = childNodesAndElements;
+                }
+                const items = children.length ? children : slot.childNodes;
+                slot.before(...items);
+                slot.remove();
+            }
+        }
+
+        #getChildNodesAndElements() {
+            const children = this.children;
+            const childNodes = this.childNodes;
+            const nodesAndElements = [];
+            let i = 0;
+
+            for (const node of childNodes) {
+                if (node.nodeType === 8) { // COMMENT_NODE;
+                    continue;
+                }
+                if (node.nodeType === 3) { // TEXT_NODE
+                    nodesAndElements.push(node);
+                } else {
+                    const items = children[i].querySelectorAll(':not([slot])');
+                    nodesAndElements.push(Array.from(items));
+                    i++;
+                }
+            }
+
+            return nodesAndElements.flat();
         }
 
         #applyAttr(name, value) {

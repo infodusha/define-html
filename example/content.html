@@ -1,8 +1,15 @@
 <template data-selector="app-content">
-    <p>Lorem ipsum</p>
+    <slot>default slot main</slot>
+    <slot name="slot2">default slot 2</slot>
+    <slot name="slot1">default slot 1</slot>
+    <slot name="slot3">default slot 3</slot>
 </template>
 
 <style>
+    :host {
+        display: block;
+    }
+
     p {
         background-color: red;
     }
