@@ -1,9 +1,11 @@
 import {ErrorStackModifier} from './error-stack-modifier.js';
+import {appendCssLink, applyGlobalStyles, getCssRules} from './css-helpers.js';
 
 export function defineCustomElement(definedElement) {
     const template = definedElement.querySelector('template');
     const useShadow = template.hasAttribute('data-shadow');
     const selector = template.getAttribute('data-selector');
+
     const styles = definedElement.querySelectorAll('style:not([data-global])');
     const globalStyles = definedElement.querySelectorAll('style[data-global]');
     const scripts = definedElement.querySelectorAll('script');
@@ -11,10 +13,14 @@ export function defineCustomElement(definedElement) {
     applyGlobalStyles(globalStyles);
 
     if(!useShadow) {
-        setEmulatedStyles(styles, selector);
+        for (const style of styles) {
+            const cssRules = getCssRules(style, selector);
+            const cssText = cssRules.map((rule) => rule.cssText).join('\n');
+            appendCssLink(cssText);
+        }
     }
 
-    const usedAttributes = getUsedAttributes(template);
+    const usedAttributes = getUsedAttributes(template, ['data-attr', 'data-if']);
 
     class DefineHTMLElement extends HTMLElement {
         static get observedAttributes() {
@@ -61,21 +67,22 @@ export function defineCustomElement(definedElement) {
         }
 
         #emulateSlots(content) {
-            const elements = content.querySelectorAll('slot');
+            const slots = content.querySelectorAll('slot');
 
-            if (elements.length === 0 && this.childNodes.length > 0) {
+            if (slots.length === 0 && this.childNodes.length > 0) {
+                // TODO make it work with named slots
                 throw new Error(`No slot found for ${selector}`)
             }
 
-            const namedSlotPlaces = Array.from(this.querySelectorAll('[slot]'));
+            const namedSlotElements = Array.from(this.querySelectorAll('[slot]'));
             const childNodesAndElements =  this.#getChildNodesAndElements();
             this.innerHTML = '';
 
-            for (const slot of elements) {
+            for (const slot of slots) {
                 let children;
                 if (slot.hasAttribute('name')) {
                     const slotName =  slot.getAttribute('name');
-                    children = namedSlotPlaces.filter(element => element.getAttribute('slot') === slotName);
+                    children = namedSlotElements.filter(element => element.getAttribute('slot') === slotName);
                 } else {
                     children = childNodesAndElements;
                 }
@@ -98,8 +105,10 @@ export function defineCustomElement(definedElement) {
                 if (node.nodeType === 3) { // TEXT_NODE
                     nodesAndElements.push(node);
                 } else {
-                    const items = children[i].querySelectorAll(':not([slot])');
-                    nodesAndElements.push(Array.from(items));
+                    const item = children[i];
+                    if (!item.hasAttribute('slot')) {
+                        nodesAndElements.push(item);
+                    }
                     i++;
                 }
             }
@@ -173,46 +182,9 @@ export function defineCustomElement(definedElement) {
     customElements.define(selector, DefineHTMLElement);
 }
 
-function appendCssLink(cssText) {
-    const url = URL.createObjectURL(new Blob([cssText], { type: 'text/css' }));
-    const element = document.createElement('link');
-    element.setAttribute('rel', 'stylesheet');
-    element.setAttribute('type', 'text/css');
-    element.href = url;
-    document.head.appendChild(element);
-    URL.revokeObjectURL(url);
-}
-
-function setEmulatedStyles(styles, selector) {
-    function getCssRuleText(rule) {
-        rule.selectorText = rule.selectorText.replace(/:host\((.+)\)/g, `${selector}$1`);
-        rule.selectorText = rule.selectorText.replace(/:host/g, selector);
-        const re = new RegExp(`^(?!${selector})(.+?)\\s*`,'g');
-        rule.selectorText = rule.selectorText.replace(re, `${selector} $1`);
-        return rule.cssText;
-    }
-
-    for (const style of styles) {
-        const cssText = Array.from(style.sheet.cssRules)
-            .map(getCssRuleText)
-            .join('\n');
-        appendCssLink(cssText);
-    }
-}
-
-function applyGlobalStyles(styles) {
-    for (const style of styles) {
-        const element = style.cloneNode(true);
-        element.removeAttribute('data-global');
-        document.head.appendChild(element);
-    }
-}
-
-function getUsedAttributes(template) {
-    const attrList = Array.from(template.content.querySelectorAll('[data-attr]'))
-        .map((element) => element.getAttribute('data-attr'));
-    const ifList = Array.from(template.content.querySelectorAll('[data-if]'))
-        .map((element) => element.getAttribute('data-attr'));
-
-    return [...attrList, ...ifList].filter((v, i, arr) => arr.indexOf(v) === i);
+function getUsedAttributes(template, dataAttributeNames) {
+    return dataAttributeNames
+        .map((dataAttributeName) => Array.from(template.content.querySelectorAll(`[${dataAttributeName}]`)).map((element) => element.getAttribute(dataAttributeName)))
+        .flat()
+        .filter((v, i, arr) => arr.indexOf(v) === i);
 }
