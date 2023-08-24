@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.0](https://github.com/infodusha/define-html/compare/v1.0.1...v1.1.0) (2023-08-24)
+
+
+### Features
+
+* add motivation ([ab21e56](https://github.com/infodusha/define-html/commit/ab21e56a559f343ec25468a823a4766c315d0fa5))
+* import css as separate files ([f69f8c5](https://github.com/infodusha/define-html/commit/f69f8c5e2ac43f233c061ea32477d0867a5fd6d6))
+* observe for attribute changes ([f616803](https://github.com/infodusha/define-html/commit/f6168032277feac52a00cafb44bd91d91074f3d3))
+* refactor structure ([cbb34b4](https://github.com/infodusha/define-html/commit/cbb34b4f7cfa7924defff1b2989a0665d91bbec5))
+* script support ([9b47052](https://github.com/infodusha/define-html/commit/9b470523edc2db39feebeeb2ecc2914806b66eac))
+* simplify readme ([0b1129d](https://github.com/infodusha/define-html/commit/0b1129dee5521865ceaf4d586b7d8a3d911e6934))
+
+
+### Bug Fixes
+
+* use getAttributeNames inside ([a74875b](https://github.com/infodusha/define-html/commit/a74875be94f18fa85a3f8e55b765e7648dbb030a))
+
 ## [1.0.1](https://github.com/infodusha/define-html/compare/v1.0.0...v1.0.1) (2023-08-23)
 
 
