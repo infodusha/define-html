@@ -2,6 +2,10 @@
 
 Define custom element to import in html
 
+# Motivation
+
+When using vanilla HTML + CSS we sometimes want to split HTML on files but do not use powerful and hard solutions
+
 # Usage
 
 Add link to preload external html file and define-html script in `head`:
