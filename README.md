@@ -4,26 +4,20 @@ Define custom element to import in html
 
 # Usage
 
-Add link to preload external html file and define-html script
+Add link to preload external html file and define-html script in `head`:
 ```html
 ...
     <link rel="preload" href="content.html" as="fetch" crossorigin />
     <script src="https://unpkg.com/define-html" type="module"></script>
 </head>
 ```
-Where `content.html` is
+Where `content.html` is:
 ```html
 <template data-selector="app-content">
     Lorem ipsum
 </template>
-
-<style>
-    :host {
-        display: block;
-    }
-</style>
 ```
-So later you can use include your template with
+So later you can use include your template with:
 ```html
 <app-content></app-content>
 ```
