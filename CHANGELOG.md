@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/infodusha/define-html/compare/v1.2.0...v1.3.0) (2023-08-24)
+
+
+### Features
+
+* simplify attribute watching ([19d8a5a](https://github.com/infodusha/define-html/commit/19d8a5afab8d8d039825acaaa885ec8036d0560e))
+
 ## [1.2.0](https://github.com/infodusha/define-html/compare/v1.1.0...v1.2.0) (2023-08-24)
 
 
