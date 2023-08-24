@@ -32,6 +32,7 @@ So later you can use include your template with:
 # TODO
 
 * Watch for attribute changes (from js)
+* Extended script support
 * Full style encapsulation (when not a shadow root mode)
 * Full slot support
 

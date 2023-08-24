@@ -7,11 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchFromLinks(element) {
     const links = Array.from(element.querySelectorAll(`link[rel='preload'][as='fetch'][href$='.html']:not([${ignoreDataAttribute}])`));
-    await Promise.all(links.map(defineHtml));
+    await Promise.all(links.map((link) => link.getAttribute('href')).map(defineHtml));
 }
 
-async function defineHtml(link) {
-    const href = link.getAttribute('href');
+async function defineHtml(href) {
     const response = await fetch(href);
     const text = await response.text();
     const definedElement = parser.parseFromString(text, 'text/html');
@@ -23,6 +22,7 @@ function createCustomElement(definedElement) {
     const useShadow = template.hasAttribute('data-shadow');
     const selector = template.getAttribute('data-selector');
     const styles = definedElement.querySelectorAll('style');
+    const scripts = definedElement.querySelectorAll('script');
 
     function setEmulatedStyles() {
         for (const style of styles) {
@@ -61,6 +61,7 @@ function createCustomElement(definedElement) {
             if (useShadow) {
                 this.#setShadowStyles();
             }
+            this.#execScripts();
         }
 
         #getContent() {
@@ -115,7 +116,56 @@ function createCustomElement(definedElement) {
                 this.shadowRoot.appendChild(element);
             }
         }
+
+        #execScripts() {
+            for (const script of scripts) {
+                if (script.getAttribute('type') === 'module') {
+                    const url = URL.createObjectURL(new Blob([script.innerText], {type: 'text/javascript'}));
+                    import(url).then(() => URL.revokeObjectURL(url)).catch(console.error);
+                } else {
+                    const code = Function(script.innerText);
+                    try {
+                        code.call(this);
+                    } catch (e) {
+                        const stack = ErrorStackModifier.fromError(e);
+                        const currentPlaceStackLength = ErrorStackModifier.current().items.length;
+                        const cutSize = currentPlaceStackLength - 2;
+                        const newStack = new ErrorStackModifier(stack.items.slice(0, -cutSize));
+                        newStack.applyToRow((r) => r.replace('DefineHTMLElement.eval', selector));
+                        console.error(newStack.toString());
+                    }
+                }
+            }
+        }
     }
 
     customElements.define(selector, DefineHTMLElement);
+}
+
+class ErrorStackModifier {
+    static current() {
+        return ErrorStackModifier.fromError(new Error());
+    }
+
+    static fromError(e) {
+        return new ErrorStackModifier(e.stack.split('\n'));
+    }
+
+    #items;
+
+    get items() {
+        return this.#items.slice();
+    }
+
+    constructor(items) {
+        this.#items = items.slice();
+    }
+
+    applyToRow(fn) {
+        this.#items = this.#items.map(fn);
+    }
+
+    toString() {
+        return this.#items.join('\n');
+    }
 }
