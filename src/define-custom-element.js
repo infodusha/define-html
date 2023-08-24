@@ -1,62 +1,20 @@
-const parser = new DOMParser();
-const ignoreDataAttribute = 'data-define-html-ignore';
+import {ErrorStackModifier} from './error-stack-modifier.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    fetchFromLinks(document).catch(console.error);
-});
-
-async function fetchFromLinks(element) {
-    const links = Array.from(element.querySelectorAll(`link[rel='preload'][as='fetch'][href$='.html']:not([${ignoreDataAttribute}])`));
-    await Promise.all(links.map((link) => link.getAttribute('href')).map(defineHtml));
-}
-
-async function defineHtml(href) {
-    const response = await fetch(href);
-    const text = await response.text();
-    const definedElement = parser.parseFromString(text, 'text/html');
-    createCustomElement(definedElement);
-}
-
-function createCustomElement(definedElement) {
+export function defineCustomElement(definedElement) {
     const template = definedElement.querySelector('template');
     const useShadow = template.hasAttribute('data-shadow');
     const selector = template.getAttribute('data-selector');
     const styles = definedElement.querySelectorAll('style');
     const scripts = definedElement.querySelectorAll('script');
 
-    function setEmulatedStyles() {
-        for (const style of styles) {
-            const cssRules = [];
-
-            for (const rule of style.sheet.cssRules) {
-                rule.selectorText = rule.selectorText.replace(/:host\((.+)\)/g, `${selector}$1`);
-                rule.selectorText = rule.selectorText.replace(/:host/g, selector);
-                const re = new RegExp(`^(?!${selector})(.+?)\\s*`,'g');
-                rule.selectorText = rule.selectorText.replace(re, `${selector} $1`);
-                cssRules.push(rule);
-            }
-
-            const element = style.cloneNode(true);
-            document.head.appendChild(element);
-
-            while (element.sheet.cssRules.length !== 0) {
-                element.sheet.deleteRule(0);
-            }
-            for (const rule of cssRules) {
-                element.sheet.insertRule(rule.cssText);
-            }
-        }
-    }
-
     if(!useShadow) {
-        setEmulatedStyles();
+        setEmulatedStyles(styles, selector);
     }
 
     class DefineHTMLElement extends HTMLElement {
         constructor() {
             super();
-            const content = this.#getContent();
-            this.#attach(content);
+            this.#attach();
             this.#setAttrs();
             if (useShadow) {
                 this.#setShadowStyles();
@@ -77,7 +35,8 @@ function createCustomElement(definedElement) {
             return content;
         }
 
-        #attach(content) {
+        #attach() {
+            const content = this.#getContent();
             if (useShadow) {
                 this.attachShadow({ mode: 'open' });
                 this.shadowRoot.appendChild(content);
@@ -142,30 +101,26 @@ function createCustomElement(definedElement) {
     customElements.define(selector, DefineHTMLElement);
 }
 
-class ErrorStackModifier {
-    static current() {
-        return ErrorStackModifier.fromError(new Error());
-    }
+function setEmulatedStyles(styles, selector) {
+    for (const style of styles) {
+        const cssRules = [];
 
-    static fromError(e) {
-        return new ErrorStackModifier(e.stack.split('\n'));
-    }
+        for (const rule of style.sheet.cssRules) {
+            rule.selectorText = rule.selectorText.replace(/:host\((.+)\)/g, `${selector}$1`);
+            rule.selectorText = rule.selectorText.replace(/:host/g, selector);
+            const re = new RegExp(`^(?!${selector})(.+?)\\s*`,'g');
+            rule.selectorText = rule.selectorText.replace(re, `${selector} $1`);
+            cssRules.push(rule);
+        }
 
-    #items;
+        const element = style.cloneNode(true);
+        document.head.appendChild(element);
 
-    get items() {
-        return this.#items.slice();
-    }
-
-    constructor(items) {
-        this.#items = items.slice();
-    }
-
-    applyToRow(fn) {
-        this.#items = this.#items.map(fn);
-    }
-
-    toString() {
-        return this.#items.join('\n');
+        while (element.sheet.cssRules.length !== 0) {
+            element.sheet.deleteRule(0);
+        }
+        for (const rule of cssRules) {
+            element.sheet.insertRule(rule.cssText);
+        }
     }
 }

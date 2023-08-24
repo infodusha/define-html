@@ -2,7 +2,7 @@
   "name": "define-html",
   "version": "1.0.1",
   "description": "Define custom element to import in html",
-  "main": "index.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
     "example": "npx http-server --cors"
@@ -18,7 +18,7 @@
     "include"
   ],
   "files": [
-    "index.js",
+    "src/",
     "package.json",
     "LICENSE",
     "README.md",
