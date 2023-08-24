@@ -5,8 +5,11 @@ export function defineCustomElement(definedElement) {
     const template = definedElement.querySelector('template');
     const useShadow = template.hasAttribute('data-shadow');
     const selector = template.getAttribute('data-selector');
-    const styles = definedElement.querySelectorAll('style');
+    const styles = definedElement.querySelectorAll('style:not([data-global])');
+    const globalStyles = definedElement.querySelectorAll('style[data-global]');
     const scripts = definedElement.querySelectorAll('script');
+
+    applyGlobalStyles(globalStyles);
 
     if(!useShadow) {
         setEmulatedStyles(styles, selector);
@@ -155,25 +158,37 @@ export function defineCustomElement(definedElement) {
     customElements.define(selector, DefineHTMLElement);
 }
 
+function appendCssLink(cssText) {
+    const url = URL.createObjectURL(new Blob([cssText], { type: 'text/css' }));
+    const element = document.createElement('link');
+    element.setAttribute('rel', 'stylesheet');
+    element.setAttribute('type', 'text/css');
+    element.href = url;
+    document.head.appendChild(element);
+    URL.revokeObjectURL(url);
+}
+
 function setEmulatedStyles(styles, selector) {
+    function getCssRuleText(rule) {
+        rule.selectorText = rule.selectorText.replace(/:host\((.+)\)/g, `${selector}$1`);
+        rule.selectorText = rule.selectorText.replace(/:host/g, selector);
+        const re = new RegExp(`^(?!${selector})(.+?)\\s*`,'g');
+        rule.selectorText = rule.selectorText.replace(re, `${selector} $1`);
+        return rule.cssText;
+    }
+
     for (const style of styles) {
-        const cssRules = [];
+        const cssText = Array.from(style.sheet.cssRules)
+            .map(getCssRuleText)
+            .join('\n');
+        appendCssLink(cssText);
+    }
+}
 
-        for (const rule of style.sheet.cssRules) {
-            rule.selectorText = rule.selectorText.replace(/:host\((.+)\)/g, `${selector}$1`);
-            rule.selectorText = rule.selectorText.replace(/:host/g, selector);
-            const re = new RegExp(`^(?!${selector})(.+?)\\s*`,'g');
-            rule.selectorText = rule.selectorText.replace(re, `${selector} $1`);
-            cssRules.push(rule);
-        }
-
-        const cssText = cssRules.map((rule) => rule.cssText).join('\n');
-        const url = URL.createObjectURL(new Blob([cssText], { type: 'text/css' }));
-        const element = document.createElement('link');
-        element.setAttribute('rel', 'stylesheet');
-        element.setAttribute('type', 'text/css');
-        element.href = url;
+function applyGlobalStyles(styles) {
+    for (const style of styles) {
+        const element = style.cloneNode(true);
+        element.removeAttribute('data-global');
         document.head.appendChild(element);
-        URL.revokeObjectURL(url);
     }
 }
