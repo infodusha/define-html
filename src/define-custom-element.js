@@ -79,7 +79,7 @@ export function defineCustomElement(definedElement) {
         #execScripts() {
             for (const script of scripts) {
                 if (script.getAttribute('type') === 'module') {
-                    const url = URL.createObjectURL(new Blob([script.innerText], {type: 'text/javascript'}));
+                    const url = URL.createObjectURL(new Blob([script.innerText], { type: 'text/javascript' }));
                     import(url).then(() => URL.revokeObjectURL(url)).catch(console.error);
                 } else {
                     const code = Function(script.innerText);
@@ -113,14 +113,13 @@ function setEmulatedStyles(styles, selector) {
             cssRules.push(rule);
         }
 
-        const element = style.cloneNode(true);
+        const cssText = cssRules.map((rule) => rule.cssText).join('\n');
+        const url = URL.createObjectURL(new Blob([cssText], { type: 'text/css' }));
+        const element = document.createElement('link');
+        element.setAttribute('rel', 'stylesheet');
+        element.setAttribute('type', 'text/css');
+        element.href = url;
         document.head.appendChild(element);
-
-        while (element.sheet.cssRules.length !== 0) {
-            element.sheet.deleteRule(0);
-        }
-        for (const rule of cssRules) {
-            element.sheet.insertRule(rule.cssText);
-        }
+        URL.revokeObjectURL(url);
     }
 }
