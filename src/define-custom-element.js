@@ -1,6 +1,5 @@
 import {ErrorStackModifier} from './error-stack-modifier.js';
 
-
 export function defineCustomElement(definedElement) {
     const template = definedElement.querySelector('template');
     const useShadow = template.hasAttribute('data-shadow');
@@ -15,30 +14,26 @@ export function defineCustomElement(definedElement) {
         setEmulatedStyles(styles, selector);
     }
 
-    class DefineHTMLElement extends HTMLElement {
-        #observedProperties = new Set();
+    const usedAttributes = getUsedAttributes(template);
 
-        #attributeChangeObserver;
+    class DefineHTMLElement extends HTMLElement {
+        static get observedAttributes() {
+            return usedAttributes;
+        }
 
         constructor() {
             super();
-            const onAttributeChange = this.#onAttributeChange.bind(this);
-            this.#attributeChangeObserver = new MutationObserver(onAttributeChange);
             this.#attach();
             if (useShadow) {
                 this.#setShadowStyles();
             }
-            this.#observeAttributes();
+            this.#setAttrs();
+            this.#makeProperties();
             this.#execScripts();
         }
 
-        connectedCallback() {
-            this.#attributeChangeObserver.observe(this, { attributes: true });
-        }
-
-        disconnectedCallback() {
-            this.#observedProperties.clear();
-            this.#attributeChangeObserver.disconnect()
+        attributeChangedCallback(name, oldValue, newValue) {
+            this.#applyAttr(name, newValue);
         }
 
         #getContent() {
@@ -96,9 +91,11 @@ export function defineCustomElement(definedElement) {
         #execScripts() {
             for (const script of scripts) {
                 if (script.getAttribute('type') === 'module') {
+                    // TODO Should module scripts be global?
                     const url = URL.createObjectURL(new Blob([script.innerText], { type: 'text/javascript' }));
                     import(url).then(() => URL.revokeObjectURL(url)).catch(console.error);
                 } else {
+                    // TODO How we can control if script is global or not?
                     const code = Function(script.innerText);
                     try {
                         code.call(this);
@@ -114,43 +111,24 @@ export function defineCustomElement(definedElement) {
             }
         }
 
-        #observeAttributes() {
+        #setAttrs() {
             for (const name of this.getAttributeNames()) {
-                this.#makeObservedProperty(name);
+                this.#applyAttr(name, this.getAttribute(name));
             }
         }
 
-        #makeObservedProperty(name) {
-            if (this.#observedProperties.has(name)) {
-                return;
-            }
-            let value = this.getAttribute(name);
-            this.#applyAttr(name, value);
-            Object.defineProperty(this, name, {
-                get() {
-                    return value;
-                },
-                set(newValue) {
-                    value = newValue;
-                    this.#applyAttr(name, newValue);
-                },
-                enumerable: true,
-                configurable: true,
-            });
-            this.#observedProperties.add(name);
-        }
-
-        #onAttributeChange(mutationList) {
-            for (const mutation of mutationList) {
-                if (mutation.type !== 'attributes') {
-                    throw new Error('Unexpected');
-                }
-                const { attributeName } = mutation;
-                if (this.#observedProperties.has(attributeName)) {
-                    this[attributeName] = this.getAttribute(attributeName);
-                } else {
-                    this.#makeObservedProperty(attributeName);
-                }
+        #makeProperties() {
+            for (const name of usedAttributes) {
+                Object.defineProperty(this, name, {
+                    get() {
+                        return this.getAttribute(name);
+                    },
+                    set(newValue) {
+                        this.setAttribute(name, newValue);
+                    },
+                    enumerable: true,
+                    configurable: true,
+                });
             }
         }
     }
@@ -191,4 +169,13 @@ function applyGlobalStyles(styles) {
         element.removeAttribute('data-global');
         document.head.appendChild(element);
     }
+}
+
+function getUsedAttributes(template) {
+    const attrList = Array.from(template.content.querySelectorAll('[data-attr]'))
+        .map((element) => element.getAttribute('data-attr'));
+    const ifList = Array.from(template.content.querySelectorAll('[data-if]'))
+        .map((element) => element.getAttribute('data-attr'));
+
+    return [...attrList, ...ifList].filter((v, i, arr) => arr.indexOf(v) === i);
 }
