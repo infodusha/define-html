@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.0](https://github.com/infodusha/define-html/compare/v1.3.0...v1.4.0) (2023-08-25)
+
+
+### Features
+
+* fix slots & extract css helpers ([220c2c7](https://github.com/infodusha/define-html/commit/220c2c71e2846192f3c2b654b061453ec070d6e1))
+* full slot support ([dc0bce5](https://github.com/infodusha/define-html/commit/dc0bce5161294cd15566c50e87127447e4386838))
+* full style encapsulation ([7a76862](https://github.com/infodusha/define-html/commit/7a76862e324d7eeae3275afe6e52c38fd2a57a2a))
+
 ## [1.3.0](https://github.com/infodusha/define-html/compare/v1.2.0...v1.3.0) (2023-08-24)
 
 
