@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/infodusha/define-html/compare/v1.4.0...v1.5.0) (2023-08-25)
+
+
+### Features
+
+* move on typescript ([ed14b89](https://github.com/infodusha/define-html/commit/ed14b89e7e1ff0c6af61081c98ec0b4de060c941))
+
 ## [1.4.0](https://github.com/infodusha/define-html/compare/v1.3.0...v1.4.0) (2023-08-25)
 
 
