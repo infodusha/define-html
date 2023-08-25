@@ -165,7 +165,7 @@ export function defineCustomElement(definedElement: Document): void {
                 }
                 element.innerText = value;
             }
-            // TODO add support for data-if and data-if-not when changed via js
+            // TODO add support for data-if, data-if-not and data-if-equal when changed via js
         }
 
         #setShadowStyles() {
