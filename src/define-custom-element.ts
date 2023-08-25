@@ -46,17 +46,18 @@ export function defineCustomElement(definedElement: Document): void {
             return usedAttributes;
         }
 
-        #attrElements: HTMLElement[] = [];
-        #optionalElements: Element[] = [];
+        readonly #attrElements: HTMLElement[] = [];
+        readonly #optionalElements: Element[] = [];
 
         readonly #uuid = crypto.randomUUID();
 
         constructor() {
             super();
-            this.#attach();
-            if (useShadow) {
-                this.#setShadowStyles();
-            }
+            const content = cloneNode(template.content);
+            this.#attrElements = Array.from(content.querySelectorAll(`[data-attr]`))
+            this.#optionalElements = Array.from(content.querySelectorAll(`[data-if]`));
+            this.#initOptionality();
+            this.#attach(content);
             this.#setAttrs();
             this.#makeProperties();
             this.#execScripts();
@@ -75,16 +76,12 @@ export function defineCustomElement(definedElement: Document): void {
             this.#applyOptionality(name);
         }
 
-        #getContent(): DocumentFragment {
-            const content = cloneNode(template.content);
-            this.#attrElements = Array.from(content.querySelectorAll(`[data-attr]`))
-            this.#optionalElements = Array.from(content.querySelectorAll(`[data-if]`));
+        #initOptionality(): void {
             for (const element of this.#optionalElements) {
                 if (!this.#isElementVisible(element)) {
                     element.setAttribute('hidden', '')
                 }
             }
-            return content;
         }
 
         #isElementVisible(element: Element): boolean {
@@ -101,11 +98,11 @@ export function defineCustomElement(definedElement: Document): void {
             return hasIfNot ? !hasAttr : hasAttr;
         }
 
-        #attach(): void {
-            const content = this.#getContent();
+        #attach(content: DocumentFragment): void {
             if (useShadow) {
                 this.attachShadow({ mode: 'open' });
                 this.shadowRoot!.appendChild(content);
+                this.#setShadowStyles();
             } else {
                 this.#emulateSlots(content);
                 this.appendChild(content);
@@ -145,10 +142,7 @@ export function defineCustomElement(definedElement: Document): void {
             let i = 0;
 
             for (const node of childNodes) {
-                if (node.nodeType === 8) { // COMMENT_NODE;
-                    continue;
-                }
-                if (node.nodeType === 3) { // TEXT_NODE
+                if (node.nodeType !== Node.ELEMENT_NODE) {
                     nodesAndElements.push(node);
                 } else {
                     const item = children[i];
