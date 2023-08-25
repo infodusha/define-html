@@ -18,19 +18,20 @@ export function returnIfDefined<T>(value: T, nullText?: string): NonNullable<T> 
 
 declare global {
     interface Window {
-        [definedElementsRegistrySymbol]: Map<string, Element>;
+        [registeredComponentsSymbol]: Map<string, Element>;
     }
 }
 
-const definedElementsRegistrySymbol: unique symbol = Symbol.for('definedElementsRegistrySymbol');
-window[definedElementsRegistrySymbol] = new Map<string, Element>();
+const registeredComponentsSymbolKey = 'registeredComponentsSymbol';
+const registeredComponentsSymbol: unique symbol = Symbol.for(registeredComponentsSymbolKey);
+window[registeredComponentsSymbol] = new Map<string, Element>();
 
 export function registerComponent(uuid: string, element: Element): void {
-    window[definedElementsRegistrySymbol].set(uuid, element)
+    window[registeredComponentsSymbol].set(uuid, element)
 }
 
 export function unregisterComponent(uuid: string): void {
-    window[definedElementsRegistrySymbol].delete(uuid);
+    window[registeredComponentsSymbol].delete(uuid);
 }
 
 export function setThisForModuleScript(code: string, uuid: string): string {
@@ -42,6 +43,6 @@ export function setThisForModuleScript(code: string, uuid: string): string {
 
         (function () {
             ${code.replaceAll(importRe, '')}
-        }).call(window[Symbol.for('definedElementsRegistrySymbol')].get('${uuid}'))
+        }).call(window[Symbol.for('${registeredComponentsSymbolKey}')].get('${uuid}'))
     `.trim();
 }
