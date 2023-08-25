@@ -74,15 +74,25 @@ export function defineCustomElement(definedElement: Document): void {
         #getContent(): DocumentFragment {
             const content = cloneNode(template.content);
             for (const element of content.querySelectorAll(`[data-if]`)) {
-                const hasIfNot = element.hasAttribute('data-if-not');
-                const name = element.getAttribute('data-if');
-                throwIfNotDefined(name);
-                const hasAttr = this.hasAttribute(name);
-                if (hasIfNot ? hasAttr : !hasAttr) {
+                if (!this.#isElementVisible(element)) {
                     element.remove();
                 }
             }
             return content;
+        }
+
+        #isElementVisible(element: Element): boolean {
+            const hasIfNot = element.hasAttribute('data-if-not');
+            const hasIfEqual = element.hasAttribute('data-if-equal');
+            const name = element.getAttribute('data-if');
+            throwIfNotDefined(name);
+            const hasAttr = this.hasAttribute(name);
+            if (hasIfEqual) {
+                const value = element.getAttribute('data-if-equal')!;
+                const isEqual = this.getAttribute(name) === value;
+                return hasIfNot ? !isEqual : isEqual;
+            }
+            return hasIfNot ? !hasAttr : hasAttr;
         }
 
         #attach(): void {
