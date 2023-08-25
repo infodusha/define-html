@@ -31,14 +31,12 @@ So later you can use include your template with:
 * Read attribute values
 * Make conditional elements
 * Optionally enable shadow root
-* Partial style encapsulation (when not a shadow root mode)
+* Style encapsulation (even when not a shadow root mode)
 * Watch for attribute changes from js
 
 # TODO
 
-* Full style encapsulation (when not a shadow root mode)
 * Extended script support
-* Full slot support
 
 # License
 

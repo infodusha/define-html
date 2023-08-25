@@ -1,5 +1,5 @@
 import {ErrorStackModifier} from './error-stack-modifier.js';
-import {appendCssLink, applyGlobalStyles, getCssRules} from './css-helpers.js';
+import {appendCssLink, applyGlobalStyles, getEncapsulatedCss} from './css-helpers.js';
 
 export function defineCustomElement(definedElement) {
     const template = definedElement.querySelector('template');
@@ -14,8 +14,7 @@ export function defineCustomElement(definedElement) {
 
     if(!useShadow) {
         for (const style of styles) {
-            const cssRules = getCssRules(style, selector);
-            const cssText = cssRules.map((rule) => rule.cssText).join('\n');
+            const cssText = getEncapsulatedCss(template, style, selector)
             appendCssLink(cssText);
         }
     }

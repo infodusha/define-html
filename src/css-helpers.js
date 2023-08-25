@@ -1,14 +1,22 @@
-function processCssRule(rule, selector) {
-    rule.selectorText = rule.selectorText.replace(/:host\((.+)\)/g, `${selector}$1`);
-    rule.selectorText = rule.selectorText.replace(/:host/g, selector);
-    const re = new RegExp(`^(?!${selector})(.+?)\\s*`,'g');
-    rule.selectorText = rule.selectorText.replace(re, `${selector} $1`);
-    return rule;
+const hostRe = /:host(\((.+)\))?/g;
+
+export function getEncapsulatedCss(template, style, selector) {
+    const unique = `data-${selector}-css`;
+
+    const cssRules = Array.from(style.sheet.cssRules);
+    for (const rule of cssRules) {
+        if (rule.selectorText.match(hostRe)) {
+            rule.selectorText = rule.selectorText.replace(hostRe, `${selector}$2`);
+            continue;
+        }
+        for (const element of template.content.querySelectorAll(rule.selectorText)) {
+            element.setAttribute(unique, '');
+        }
+        rule.selectorText = `${rule.selectorText}[${unique}]`;
+    }
+    return cssRules.map((rule) => rule.cssText).join('\n');
 }
 
-export function getCssRules(style, selector) {
-    return Array.from(style.sheet.cssRules).map((rule) => processCssRule(rule, selector));
-}
 
 export function appendCssLink(cssText) {
     const url = URL.createObjectURL(new Blob([cssText], { type: 'text/css' }));
