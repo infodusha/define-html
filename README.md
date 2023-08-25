@@ -34,10 +34,6 @@ So later you can use include your template with:
 * Style encapsulation (even when not a shadow root mode)
 * Watch for attribute changes from js
 
-# TODO
-
-* Extended script support
-
 # License
 
 Apache-2.0

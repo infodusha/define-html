@@ -1,9 +1,24 @@
 import {ErrorStackModifier} from './error-stack-modifier.js';
 import {appendCssLink, applyGlobalStyles, getEncapsulatedCss} from './css-helpers.js';
-import {cloneNode, returnIfDefined, throwIfNotDefined} from './helpers.js';
+import {
+    cloneNode,
+    registerComponent,
+    returnIfDefined,
+    setThisForModuleScript,
+    throwIfNotDefined,
+    unregisterComponent
+} from './helpers.js';
 
 interface AttributeChanged {
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
+}
+
+interface Connected {
+    connectedCallback(): void;
+}
+
+interface Disconnected {
+    disconnectedCallback(): void;
 }
 
 export function defineCustomElement(definedElement: Document): void {
@@ -26,10 +41,12 @@ export function defineCustomElement(definedElement: Document): void {
 
     const usedAttributes = getUsedAttributes(template, ['data-attr', 'data-if']);
 
-    class DefineHTMLElement extends HTMLElement implements AttributeChanged {
+    class DefineHTMLElement extends HTMLElement implements AttributeChanged, Connected, Disconnected {
         static get observedAttributes(): string[] {
             return usedAttributes;
         }
+
+        readonly #uuid = crypto.randomUUID();
 
         constructor() {
             super();
@@ -40,6 +57,14 @@ export function defineCustomElement(definedElement: Document): void {
             this.#setAttrs();
             this.#makeProperties();
             this.#execScripts();
+        }
+
+        connectedCallback(): void {
+            registerComponent(this.#uuid, this);
+        }
+
+        disconnectedCallback(): void {
+            unregisterComponent(this.#uuid);
         }
 
         attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
@@ -143,11 +168,10 @@ export function defineCustomElement(definedElement: Document): void {
         #execScripts() {
             for (const script of scripts) {
                 if (script.getAttribute('type') === 'module') {
-                    // TODO Should module scripts be global?
-                    const url = URL.createObjectURL(new Blob([script.innerText], { type: 'text/javascript' }));
+                    const code = setThisForModuleScript(script.innerText, this.#uuid);
+                    const url = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
                     import(url).then(() => URL.revokeObjectURL(url)).catch(console.error);
                 } else {
-                    // TODO How we can control if script is global or not?
                     const code = Function(script.innerText);
                     try {
                         code.call(this);
