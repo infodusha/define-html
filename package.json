@@ -2,9 +2,11 @@
   "name": "define-html",
   "version": "1.4.0",
   "description": "Define custom element to import in html",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
+    "watch": "tsc -w",
+    "build": "tsc",
     "example": "npx http-server --cors"
   },
   "repository": {
@@ -18,12 +20,15 @@
     "include"
   ],
   "files": [
-    "src/",
+    "dist/",
     "package.json",
     "LICENSE",
     "README.md",
     "CHANGELOG.md"
   ],
   "author": "infodusha",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
 }

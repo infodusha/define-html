@@ -1,9 +1,13 @@
+import {cloneNode} from './helpers.js';
+
 const hostRe = /:host(\((.+)\))?/g;
 
-export function getEncapsulatedCss(template, style, selector) {
+export function getEncapsulatedCss(template: HTMLTemplateElement, style: HTMLStyleElement, selector: string): string {
     const unique = `data-${selector}-css`;
-
-    const cssRules = Array.from(style.sheet.cssRules);
+    if (!style.sheet) {
+        return '';
+    }
+    const cssRules = Array.from(style.sheet.cssRules) as CSSStyleRule[];
     for (const rule of cssRules) {
         if (rule.selectorText.match(hostRe)) {
             rule.selectorText = rule.selectorText.replace(hostRe, `${selector}$2`);
@@ -18,7 +22,7 @@ export function getEncapsulatedCss(template, style, selector) {
 }
 
 
-export function appendCssLink(cssText) {
+export function appendCssLink(cssText: string): void {
     const url = URL.createObjectURL(new Blob([cssText], { type: 'text/css' }));
     const element = document.createElement('link');
     element.setAttribute('rel', 'stylesheet');
@@ -28,9 +32,9 @@ export function appendCssLink(cssText) {
     URL.revokeObjectURL(url);
 }
 
-export function applyGlobalStyles(styles) {
+export function applyGlobalStyles(styles: HTMLStyleElement[]): void {
     for (const style of styles) {
-        const element = style.cloneNode(true);
+        const element = cloneNode(style);
         element.removeAttribute('data-global');
         document.head.appendChild(element);
     }

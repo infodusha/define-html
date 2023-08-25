@@ -3,21 +3,21 @@ export class ErrorStackModifier {
         return ErrorStackModifier.fromError(new Error());
     }
 
-    static fromError(e) {
-        return new ErrorStackModifier(e.stack.split('\n'));
+    static fromError(e: Error) {
+        return new ErrorStackModifier(e.stack?.split('\n') ?? []);
     }
 
-    #items;
+    #items: string[];
 
     get items() {
         return this.#items.slice();
     }
 
-    constructor(items) {
+    constructor(items: string[]) {
         this.#items = items.slice();
     }
 
-    applyToRow(fn) {
+    applyToRow(fn: (item: string) => string) {
         this.#items = this.#items.map(fn);
     }
 
