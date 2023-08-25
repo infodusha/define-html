@@ -175,7 +175,7 @@ export function defineCustomElement(definedElement: Document): void {
             }
         }
 
-        #execScripts() {
+        #execScripts(): void {
             for (const script of scripts) {
                 if (script.getAttribute('type') === 'module') {
                     const code = setThisForModuleScript(script.innerText, this.#uuid);
@@ -201,7 +201,7 @@ export function defineCustomElement(definedElement: Document): void {
             }
         }
 
-        #setAttrs() {
+        #setAttrs(): void {
             for (const name of this.getAttributeNames()) {
                 this.#applyAttr(name, this.getAttribute(name)!);
             }

@@ -37,12 +37,6 @@ export function unregisterComponent(uuid: string): void {
 export function setThisForModuleScript(code: string, uuid: string): string {
     // TODO relative import path should also be replaced
     const imports = [...code.matchAll(importRe)].map((match) => match[0]).join('\n');
-
-    return `
-        ${imports}
-
-        (function () {
-            ${code.replaceAll(importRe, '')}
-        }).call(window[Symbol.for('${registeredComponentsSymbolKey}')].get('${uuid}'))
-    `.trim();
+    const component = `window[Symbol.for('${registeredComponentsSymbolKey}')].get('${uuid}')`;
+    return `${imports}\n(function () {\n${code.replaceAll(importRe, '')}\n}).call(${component})`
 }
