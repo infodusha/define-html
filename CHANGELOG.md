@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.0](https://github.com/infodusha/define-html/compare/v1.5.0...v1.6.0) (2023-08-25)
+
+
+### Features
+
+* add support for data-if-equal ([19b4e60](https://github.com/infodusha/define-html/commit/19b4e604623c801dd67c7ab75f77032408c326a4))
+* extend script modules support ([fdf2b85](https://github.com/infodusha/define-html/commit/fdf2b85b0b9c606fd46259cd038f8bb6cd3082b7))
+
 ## [1.5.0](https://github.com/infodusha/define-html/compare/v1.4.0...v1.5.0) (2023-08-25)
 
 
