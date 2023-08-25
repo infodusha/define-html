@@ -46,6 +46,9 @@ export function defineCustomElement(definedElement: Document): void {
             return usedAttributes;
         }
 
+        #attrElements: HTMLElement[] = [];
+        #optionalElements: Element[] = [];
+
         readonly #uuid = crypto.randomUUID();
 
         constructor() {
@@ -69,13 +72,16 @@ export function defineCustomElement(definedElement: Document): void {
 
         attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
             this.#applyAttr(name, newValue);
+            this.#applyOptionality(name);
         }
 
         #getContent(): DocumentFragment {
             const content = cloneNode(template.content);
-            for (const element of content.querySelectorAll(`[data-if]`)) {
+            this.#attrElements = Array.from(content.querySelectorAll(`[data-attr]`))
+            this.#optionalElements = Array.from(content.querySelectorAll(`[data-if]`));
+            for (const element of this.#optionalElements) {
                 if (!this.#isElementVisible(element)) {
-                    element.remove();
+                    element.setAttribute('hidden', '')
                 }
             }
             return content;
@@ -158,14 +164,25 @@ export function defineCustomElement(definedElement: Document): void {
         }
 
         #applyAttr(name: string, value: string): void {
-            const root = useShadow ? this.shadowRoot! : this;
-            for (const element of root.querySelectorAll<HTMLElement>(`[data-attr='${name}']`)) {
+            const attrElements = this.#attrElements.filter((element) => element.getAttribute('data-attr') === name);
+            for (const element of attrElements) {
                 if (element.childNodes) {
                     // TODO handle case when there are already nodes inside
                 }
                 element.innerText = value;
             }
-            // TODO add support for data-if, data-if-not and data-if-equal when changed via js
+
+        }
+
+        #applyOptionality(name: string): void {
+            const optionalForElements = this.#optionalElements.filter((element) => element.getAttribute('data-if') === name);
+            for (const element of optionalForElements) {
+                if (!this.#isElementVisible(element)) {
+                    element.setAttribute('hidden', '');
+                } else {
+                    element.removeAttribute('hidden');
+                }
+            }
         }
 
         #setShadowStyles() {
