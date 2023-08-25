@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/infodusha/define-html/compare/v1.6.1...v1.7.0) (2023-08-25)
+
+
+### Features
+
+* data-if changes from js support ([e69a8f0](https://github.com/infodusha/define-html/commit/e69a8f07c0baee83725b16a3c44cfdb935d08d03))
+
 ## [1.6.1](https://github.com/infodusha/define-html/compare/v1.6.0...v1.6.1) (2023-08-25)
 
 
