@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.1](https://github.com/infodusha/define-html/compare/v1.6.0...v1.6.1) (2023-08-25)
+
+
+### Bug Fixes
+
+* module script tabs ([467d101](https://github.com/infodusha/define-html/commit/467d101afa5c8f827936b18d20995b657bd48494))
+* refactor naming ([fc16203](https://github.com/infodusha/define-html/commit/fc16203cdbbb2e25b67e73fb2f3cac08dee6e692))
+
 ## [1.6.0](https://github.com/infodusha/define-html/compare/v1.5.0...v1.6.0) (2023-08-25)
 
 
