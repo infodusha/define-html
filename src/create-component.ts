@@ -21,15 +21,15 @@ interface Disconnected {
     disconnectedCallback(): void;
 }
 
-export function defineCustomElement(definedElement: Document): void {
+export function createComponent(definedElement: Document): [string, typeof HTMLElement] {
     const template = returnIfDefined(definedElement.querySelector('template'), 'Template is required');
-    const useShadow = template.hasAttribute('data-shadow');
     const selector = returnIfDefined(template.getAttribute('data-selector'), 'Selector is required');
+    const useShadow = template.hasAttribute('data-shadow');
 
     const styles: NodeListOf<HTMLStyleElement> = definedElement.querySelectorAll('style:not([data-global])');
-    const globalStyles: NodeListOf<HTMLStyleElement> = definedElement.querySelectorAll('style[data-global]');
     const scripts = definedElement.querySelectorAll('script');
 
+    const globalStyles: NodeListOf<HTMLStyleElement> = definedElement.querySelectorAll('style[data-global]');
     applyGlobalStyles(Array.from(globalStyles));
 
     if(!useShadow) {
@@ -41,7 +41,7 @@ export function defineCustomElement(definedElement: Document): void {
 
     const usedAttributes = getUsedAttributes(template, ['data-attr', 'data-if']);
 
-    class DefineHTMLElement extends HTMLElement implements AttributeChanged, Connected, Disconnected {
+    class Component extends HTMLElement implements AttributeChanged, Connected, Disconnected {
         static get observedAttributes(): string[] {
             return usedAttributes;
         }
@@ -85,13 +85,13 @@ export function defineCustomElement(definedElement: Document): void {
         }
 
         #isElementVisible(element: Element): boolean {
-            const hasIfNot = element.hasAttribute('data-if-not');
-            const hasIfEqual = element.hasAttribute('data-if-equal');
             const name = element.getAttribute('data-if');
             throwIfNotDefined(name);
+            const hasIfNot = element.hasAttribute('data-if-not');
+            const hasIfEqual = element.hasAttribute('data-if-equal');
             const hasAttr = this.hasAttribute(name);
             if (hasIfEqual) {
-                const value = element.getAttribute('data-if-equal')!;
+                const value = returnIfDefined(element.getAttribute('data-if-equal'));
                 const isEqual = this.getAttribute(name) === value;
                 return hasIfNot ? !isEqual : isEqual;
             }
@@ -100,8 +100,8 @@ export function defineCustomElement(definedElement: Document): void {
 
         #attach(content: DocumentFragment): void {
             if (useShadow) {
-                this.attachShadow({ mode: 'open' });
-                this.shadowRoot!.appendChild(content);
+                const shadowRoot = this.attachShadow({ mode: 'open' });
+                shadowRoot.appendChild(content);
                 this.#setShadowStyles();
             } else {
                 this.#emulateSlots(content);
@@ -110,51 +110,40 @@ export function defineCustomElement(definedElement: Document): void {
         }
 
         #emulateSlots(content: DocumentFragment): void {
-            const slots = content.querySelectorAll('slot');
-
-            if (slots.length === 0 && this.childNodes.length > 0) {
-                // TODO make it work with named slots
-                throw new Error(`No slot found for ${selector}`)
-            }
-
-            const namedSlotElements = Array.from(this.querySelectorAll('[slot]'));
-            const childNodesAndElements =  this.#getChildNodesAndElements();
+            const defaultSlot = content.querySelector('slot:not([name])');
+            const childNodes = Array.from(this.childNodes);
             this.innerHTML = '';
-
-            for (const slot of slots) {
-                let children;
-                if (slot.hasAttribute('name')) {
-                    const slotName =  slot.getAttribute('name')!;
-                    children = namedSlotElements.filter(element => element.getAttribute('slot') === slotName);
-                } else {
-                    children = childNodesAndElements;
-                }
-                const items = children.length ? children : slot.childNodes;
-                slot.before(...items);
-                slot.remove();
-            }
-        }
-
-        #getChildNodesAndElements(): Array<Node | Element> {
-            const children = this.children;
-            const childNodes = this.childNodes;
-            const nodesAndElements: Array<Node | Element> = [];
-            let i = 0;
+            const visitedSlots = new WeakSet<Element>();
 
             for (const node of childNodes) {
-                if (node.nodeType !== Node.ELEMENT_NODE) {
-                    nodesAndElements.push(node);
-                } else {
-                    const item = children[i];
-                    throwIfNotDefined(item);
-                    if (!item.hasAttribute('slot')) {
-                        nodesAndElements.push(item);
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    const element = node as Element;
+                    if (element.hasAttribute('slot')) {
+                        const slotName = returnIfDefined(element.getAttribute('slot'));
+                        const slot = content.querySelector(`slot[name=${slotName}]`);
+                        if (!slot) {
+                            console.warn(`No slot with name "${slotName}" found for ${selector}`);
+                            continue;
+                        }
+                        slot.before(node);
+                        visitedSlots.add(slot);
+                        continue;
                     }
-                    i++;
                 }
+                if (!defaultSlot) {
+                    console.warn(`No default slot found for ${selector}`);
+                    continue;
+                }
+                defaultSlot.before(node);
+                visitedSlots.add(defaultSlot);
             }
 
-            return nodesAndElements;
+            for (const slot of content.querySelectorAll('slot')) {
+                if (!visitedSlots.has(slot)) {
+                    slot.before(...slot.childNodes);
+                }
+                slot.remove();
+            }
         }
 
         #applyAttr(name: string, value: string): void {
@@ -182,7 +171,7 @@ export function defineCustomElement(definedElement: Document): void {
         #setShadowStyles() {
             for (const style of styles) {
                 const element = style.cloneNode(true);
-                this.shadowRoot!.appendChild(element);
+                returnIfDefined(this.shadowRoot).appendChild(element);
             }
         }
 
@@ -234,14 +223,14 @@ export function defineCustomElement(definedElement: Document): void {
         }
     }
 
-    customElements.define(selector, DefineHTMLElement);
+    return [selector, Component];
 }
 
 function getUsedAttributes(template: HTMLTemplateElement, dataAttributeNames: string[]): string[] {
     return dataAttributeNames
         .map((dataAttributeName) => {
             return Array.from(template.content.querySelectorAll(`[${dataAttributeName}]`))
-                .map((element) => element.getAttribute(dataAttributeName)!)
+                .map((element) => returnIfDefined(element.getAttribute(dataAttributeName)))
         })
         .flat()
         .filter((v, i, arr) => arr.indexOf(v) === i);

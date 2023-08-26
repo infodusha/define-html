@@ -1,4 +1,4 @@
-import {defineCustomElement} from './define-custom-element.js';
+import {createComponent} from './create-component.js';
 import {throwIfNotDefined} from './helpers.js';
 
 const parser = new DOMParser();
@@ -18,5 +18,5 @@ async function defineHtml(href: string | null): Promise<void> {
     const response = await fetch(href);
     const text = await response.text();
     const definedElement = parser.parseFromString(text, 'text/html');
-    defineCustomElement(definedElement);
+    customElements.define(...createComponent(definedElement));
 }
