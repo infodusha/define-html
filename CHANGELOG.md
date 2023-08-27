@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.0](https://github.com/infodusha/define-html/compare/v1.7.0...v1.8.0) (2023-08-27)
+
+
+### Features
+
+* add playwright ([e23d478](https://github.com/infodusha/define-html/commit/e23d47883317ba74052254795128ae08221a050f))
+* better slot support ([ff8b575](https://github.com/infodusha/define-html/commit/ff8b5752ac152b7e57be50c4742f55ed6a527061))
+
+
+### Bug Fixes
+
+* strip comments on build ([a84c5b3](https://github.com/infodusha/define-html/commit/a84c5b3f352c3b9fcc7a65bdc3ec4a2b5e20ab80))
+
 ## [1.7.0](https://github.com/infodusha/define-html/compare/v1.6.1...v1.7.0) (2023-08-25)
 
 
