@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "start": "npx http-server --cors --a localhost -p 3000",
+    "start": "http-server --cors --a localhost -p 3000",
     "watch": "tsc -w",
     "build": "tsc",
     "test": "playwright test",
@@ -32,6 +32,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@playwright/test": "^1.37.1",
+    "http-server": "^14.1.1",
     "typescript": "^5.2.2"
   }
 }
