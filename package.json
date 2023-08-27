@@ -5,9 +5,11 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
+    "start": "npx http-server --cors --a localhost -p 3000",
     "watch": "tsc -w",
     "build": "tsc",
-    "example": "npx http-server --cors"
+    "test": "playwright test",
+    "test:local": "playwright test --ui"
   },
   "repository": {
     "type": "git",
@@ -29,6 +31,7 @@
   "author": "infodusha",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@playwright/test": "^1.37.1",
     "typescript": "^5.2.2"
   }
 }

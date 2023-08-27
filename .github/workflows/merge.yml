@@ -17,18 +17,24 @@ jobs:
           release-type: node
           pull-request-title-pattern: 'chore: release ${version}'
       - uses: actions/checkout@v3
-        if: ${{ steps.release.outputs.release_created }}
       - uses: actions/setup-node@v3
         with:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
-        if: ${{ steps.release.outputs.release_created }}
       - run: npm install -g npm
         if: ${{ steps.release.outputs.release_created }}
       - run: npm ci
-        if: ${{ steps.release.outputs.release_created }}
+      - run: npx playwright install --with-deps
+        if: "!${{ steps.release.outputs.release_created }}"
       - run: npm run build
-        if: ${{ steps.release.outputs.release_created }}
+      - run: npm run test
+        if: "!${{ steps.release.outputs.release_created }}"
+      - uses: actions/upload-artifact@v3
+        if: "!${{ steps.release.outputs.release_created }}"
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
       - run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
