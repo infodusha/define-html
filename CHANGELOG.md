@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/infodusha/define-html/compare/v1.8.0...v1.8.1) (2023-08-27)
+
+
+### Bug Fixes
+
+* add http-server to dev deps ([393833c](https://github.com/infodusha/define-html/commit/393833cc47a0f177699b357cc87e0498cba911c8))
+
 ## [1.8.0](https://github.com/infodusha/define-html/compare/v1.7.0...v1.8.0) (2023-08-27)
 
 
