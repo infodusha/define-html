@@ -1,8 +1,5 @@
 name: Tests
 on:
-  push:
-    branches:
-      - release-please--branches--main--components--define-html
   pull_request:
     branches:
       - main
