@@ -1,6 +1,6 @@
 {
   "name": "define-html",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Define custom element to import in html",
   "main": "dist/index.js",
   "type": "module",
