@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.8.2](https://github.com/infodusha/define-html/compare/v1.8.1...v1.8.2) (2023-08-27)
+
+
+### Bug Fixes
+
+* run tests in different workflow ([82efe37](https://github.com/infodusha/define-html/commit/82efe371777a0e0e8348ec28b3a4530b846a5597))
+* run tests in different workflow ([2d39abd](https://github.com/infodusha/define-html/commit/2d39abdfbb11dcc4ea7caef9b77733b04b031fad))
+* run tests in different workflow ([68226ee](https://github.com/infodusha/define-html/commit/68226eea23924d78635b7d0694a28bd5f9e8040c))
+* run tests in different workflow ([5ffe091](https://github.com/infodusha/define-html/commit/5ffe0913a2071c4666e922ab58acb794a90de6a2))
+* run tests in different workflow ([9623776](https://github.com/infodusha/define-html/commit/9623776fe8704fa9a5bab9336c41e7a7225886ce))
+
 ## [1.8.1](https://github.com/infodusha/define-html/compare/v1.8.0...v1.8.1) (2023-08-27)
 
 
