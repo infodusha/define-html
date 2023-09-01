@@ -21,7 +21,6 @@ export function getEncapsulatedCss(template: HTMLTemplateElement, style: HTMLSty
     return cssRules.map((rule) => rule.cssText).join('\n');
 }
 
-
 export function appendCssLink(cssText: string): void {
     const url = URL.createObjectURL(new Blob([cssText], { type: 'text/css' }));
     const element = document.createElement('link');

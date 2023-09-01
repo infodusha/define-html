@@ -6,7 +6,7 @@ export function cloneNode<T extends Node>(element: T): T {
 }
 
 export function throwIfNotDefined<T>(value: T, nullText?: string): asserts value is NonNullable<T>  {
-    if (!value) {
+    if (value === null || value === undefined) {
         throw new Error(nullText ?? 'Unexpected to get here');
     }
 }
@@ -38,5 +38,5 @@ export function setThisForModuleScript(code: string, uuid: string): string {
     // TODO relative import path should also be replaced
     const imports = [...code.matchAll(importRe)].map((match) => match[0]).join('\n');
     const component = `window[Symbol.for('${registeredComponentsSymbolKey}')].get('${uuid}')`;
-    return `${imports}\n(function () {\n${code.replaceAll(importRe, '')}\n}).call(${component})`
+    return `${imports}\n(function () {\n${code.replaceAll(importRe, '')}\n}).call(${component});`
 }

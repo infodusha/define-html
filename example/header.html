@@ -1,7 +1,7 @@
 <template data-selector="app-header">
     <header>
-        My name is: <b data-attr="name"></b>
-        <span data-if="Name" data-if-equal="Andrei">
+        My name is: <b data-attr="name">Unknown</b>
+        <span data-if="name" data-if-equal="Andrei">
             I see Andrei in you
         </span>
         <span data-if="admin">
@@ -33,6 +33,6 @@
 
 <script type="module">
     setTimeout(() => {
-        this.setAttribute('name', 'Censored');
+        this.removeAttribute('name');
     }, 6000);
 </script>

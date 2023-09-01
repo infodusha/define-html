@@ -10,7 +10,7 @@ import {
 } from './helpers.js';
 
 interface AttributeChanged {
-    attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
+    attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void;
 }
 
 interface Connected {
@@ -47,6 +47,7 @@ export function createComponent(definedElement: Document): [string, typeof HTMLE
         }
 
         readonly #attrElements: HTMLElement[] = [];
+        readonly #attrDefaults = new WeakMap<HTMLElement, ChildNode[]>();
         readonly #optionalElements: Element[] = [];
 
         readonly #uuid = crypto.randomUUID();
@@ -71,7 +72,7 @@ export function createComponent(definedElement: Document): [string, typeof HTMLE
             unregisterComponent(this.#uuid);
         }
 
-        attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
+        attributeChangedCallback(name: string, _oldValue: unknown, newValue: string | null): void {
             this.#applyAttr(name, newValue);
             this.#applyOptionality(name);
         }
@@ -146,15 +147,17 @@ export function createComponent(definedElement: Document): [string, typeof HTMLE
             }
         }
 
-        #applyAttr(name: string, value: string): void {
+        #applyAttr(name: string, value: string | null): void {
             const attrElements = this.#attrElements.filter((element) => element.getAttribute('data-attr') === name);
             for (const element of attrElements) {
-                if (element.childNodes) {
-                    // TODO handle case when there are already nodes inside
+                if (value !== null) {
+                    element.textContent = value;
+                } else {
+                    const children = this.#attrDefaults.get(element) ?? [];
+                    element.innerText = '';
+                    element.append(...children);
                 }
-                element.innerText = value;
             }
-
         }
 
         #applyOptionality(name: string): void {
@@ -182,9 +185,9 @@ export function createComponent(definedElement: Document): [string, typeof HTMLE
                     const url = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
                     import(url).then(() => URL.revokeObjectURL(url)).catch(console.error);
                 } else {
-                    const code = Function(script.innerText);
+                    const fn = Function(script.innerText);
                     try {
-                        code.call(this);
+                        fn.call(this);
                     } catch (e) {
                         if (!(e instanceof Error)) {
                            console.error(e);
@@ -202,8 +205,11 @@ export function createComponent(definedElement: Document): [string, typeof HTMLE
         }
 
         #setAttrs(): void {
+            for (const attrElement of this.#attrElements) {
+                this.#attrDefaults.set(attrElement, Array.from(attrElement.childNodes));
+            }
             for (const name of this.getAttributeNames()) {
-                this.#applyAttr(name, this.getAttribute(name)!);
+                this.#applyAttr(name, returnIfDefined(this.getAttribute(name)));
             }
         }
 
