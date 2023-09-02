@@ -1,9 +1,5 @@
 import {appendCssLink, applyGlobalStyles, getEncapsulatedCss} from './css-helpers.js';
-import {
-    cloneNode,
-    returnIfDefined,
-    throwIfNotDefined,
-} from './helpers.js';
+import {cloneNode, returnIfDefined, throwIfNotDefined} from './helpers.js';
 import {CleanupFn, executeScript} from "./execute-script.js";
 
 interface AttributeChanged {
@@ -46,7 +42,10 @@ export function createComponent(definedElement: Document, relativeTo: string): [
 
         readonly #attrElements: HTMLElement[] = [];
         readonly #attrDefaults = new WeakMap<HTMLElement, ChildNode[]>();
-        readonly #optionalElements: Element[] = [];
+
+        readonly #optionalElements: HTMLElement[] = [];
+        readonly #optionalMarkers = new WeakMap<HTMLElement, Comment>();
+
         readonly #cleanupFns = new Set<CleanupFn>();
 
         constructor() {
@@ -74,9 +73,21 @@ export function createComponent(definedElement: Document, relativeTo: string): [
         #initOptionality(): void {
             for (const element of this.#optionalElements) {
                 if (!this.#isElementVisible(element)) {
-                    element.setAttribute('hidden', '');
+                    this.#hideOptional(element);
                 }
             }
+        }
+
+        #hideOptional(element: HTMLElement): void {
+            if (this.#optionalMarkers.has(element)) {
+                // Already hidden
+                return;
+            }
+            const text = ` data-if="${element.getAttribute('data-if')}" `;
+            const marker = document.createComment(text)
+            element.before(marker);
+            this.#optionalMarkers.set(element, marker);
+            element.remove();
         }
 
         #isElementVisible(element: Element): boolean {
@@ -158,10 +169,17 @@ export function createComponent(definedElement: Document, relativeTo: string): [
         #applyOptionality(name: string): void {
             const optionalForElements = this.#optionalElements.filter((element) => element.getAttribute('data-if') === name);
             for (const element of optionalForElements) {
-                if (!this.#isElementVisible(element)) {
-                    element.setAttribute('hidden', '');
+                if (this.#isElementVisible(element)) {
+                    const marker = this.#optionalMarkers.get(element);
+                    if (!marker) {
+                        // Already visible
+                        continue;
+                    }
+                    marker.after(element);
+                    marker.remove();
+                    this.#optionalMarkers.delete(element);
                 } else {
-                    element.removeAttribute('hidden');
+                    this.#hideOptional(element);
                 }
             }
         }
@@ -182,8 +200,8 @@ export function createComponent(definedElement: Document, relativeTo: string): [
         }
 
         #setAttrs(): void {
-            for (const attrElement of this.#attrElements) {
-                this.#attrDefaults.set(attrElement, Array.from(attrElement.childNodes));
+            for (const element of this.#attrElements) {
+                this.#attrDefaults.set(element, Array.from(element.childNodes));
             }
             for (const name of this.getAttributeNames()) {
                 this.#applyAttr(name, returnIfDefined(this.getAttribute(name)));
@@ -209,11 +227,11 @@ export function createComponent(definedElement: Document, relativeTo: string): [
     return [selector, Component];
 }
 
-function getUsedAttributes(template: HTMLTemplateElement, dataAttributeNames: string[]): string[] {
-    return dataAttributeNames
-        .map((dataAttributeName) => {
-            return Array.from(template.content.querySelectorAll(`[${dataAttributeName}]`))
-                .map((element) => returnIfDefined(element.getAttribute(dataAttributeName)))
+function getUsedAttributes(template: HTMLTemplateElement, attributeNames: string[]): string[] {
+    return attributeNames
+        .map((attributeName) => {
+            return Array.from(template.content.querySelectorAll(`[${attributeName}]`))
+                .map((element) => returnIfDefined(element.getAttribute(attributeName)))
         })
         .flat()
         .filter((v, i, arr) => arr.indexOf(v) === i);

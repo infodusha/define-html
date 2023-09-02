@@ -3,17 +3,31 @@
         <h3 data-attr="header">No header</h3>
     </slot>
     <slot>No data</slot>
+    <button data-if="action">Action</button>
+    <span data-if="action" data-if-not>No action</span>
 </template>
 
 <style>
     :host {
         display: flex;
         flex-direction: column;
+        row-gap: 6px;
         border-radius: 3px;
         border: solid 1px black;
         padding: 12px;
     }
 </style>
+
+<script>
+    setInterval(() => {
+        const hasAction = this.hasAttribute('action');
+        if (hasAction) {
+            this.removeAttribute('action');
+        } else {
+            this.setAttribute('action', '');
+        }
+    }, 1500);
+</script>
 
 <script src="../scripts/card.js"></script>
 <script src="../scripts/card.js" type="module"></script>
