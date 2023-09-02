@@ -212,10 +212,14 @@ export function createComponent(definedElement: Document, relativeTo: string): [
             for (const name of usedAttributes) {
                 Object.defineProperty(this, name, {
                     get() {
-                        return this.getAttribute(name);
+                        return this.getAttribute(name) ?? undefined;
                     },
-                    set(newValue) {
-                        this.setAttribute(name, newValue);
+                    set(newValue: unknown) {
+                        if (newValue === null || newValue === undefined) {
+                            this.removeAttribute(name);
+                        } else {
+                            this.setAttribute(name, newValue);
+                        }
                     },
                     enumerable: true,
                     configurable: true,

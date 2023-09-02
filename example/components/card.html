@@ -20,12 +20,7 @@
 
 <script>
     setInterval(() => {
-        const hasAction = this.hasAttribute('action');
-        if (hasAction) {
-            this.removeAttribute('action');
-        } else {
-            this.setAttribute('action', '');
-        }
+        this.action = this.action === '' ? null : '';
     }, 1500);
 </script>
 
