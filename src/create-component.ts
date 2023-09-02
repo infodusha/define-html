@@ -1,37 +1,34 @@
-import {ErrorStackModifier} from './error-stack-modifier.js';
 import {appendCssLink, applyGlobalStyles, getEncapsulatedCss} from './css-helpers.js';
 import {
-    changeRelativeUrl,
     cloneNode,
-    registerComponent,
     returnIfDefined,
-    setThisForModuleScript,
     throwIfNotDefined,
-    unregisterComponent
 } from './helpers.js';
+import {CleanupFn, executeScript} from "./execute-script.js";
 
 interface AttributeChanged {
     attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void;
-}
-
-interface Connected {
-    connectedCallback(): void;
 }
 
 interface Disconnected {
     disconnectedCallback(): void;
 }
 
-export function createComponent(definedElement: Document, href: string): [string, typeof HTMLElement] {
+export function createComponent(definedElement: Document, relativeTo: string): [string, typeof HTMLElement] {
     const template = returnIfDefined(definedElement.querySelector('template'), 'Template is required');
     const selector = returnIfDefined(template.getAttribute('data-selector'), 'Selector is required');
     const useShadow = template.hasAttribute('data-shadow');
 
     const styles: NodeListOf<HTMLStyleElement> = definedElement.querySelectorAll('style:not([data-global])');
-    const scripts = definedElement.querySelectorAll('script');
+    const scripts: NodeListOf<HTMLScriptElement> = definedElement.querySelectorAll('script:not([data-global])');
 
     const globalStyles: NodeListOf<HTMLStyleElement> = definedElement.querySelectorAll('style[data-global]');
+    const globalScripts: NodeListOf<HTMLScriptElement> = definedElement.querySelectorAll('script[data-global]');
+
     applyGlobalStyles(Array.from(globalStyles));
+    for (const globalScript of globalScripts) {
+        executeScript(globalScript, relativeTo).catch(console.error);
+    }
 
     if(!useShadow) {
         for (const style of styles) {
@@ -42,7 +39,7 @@ export function createComponent(definedElement: Document, href: string): [string
 
     const usedAttributes = getUsedAttributes(template, ['data-attr', 'data-if']);
 
-    class Component extends HTMLElement implements AttributeChanged, Connected, Disconnected {
+    class Component extends HTMLElement implements AttributeChanged, Disconnected {
         static get observedAttributes(): string[] {
             return usedAttributes;
         }
@@ -50,8 +47,7 @@ export function createComponent(definedElement: Document, href: string): [string
         readonly #attrElements: HTMLElement[] = [];
         readonly #attrDefaults = new WeakMap<HTMLElement, ChildNode[]>();
         readonly #optionalElements: Element[] = [];
-
-        readonly #uuid = crypto.randomUUID();
+        readonly #cleanupFns = new Set<CleanupFn>();
 
         constructor() {
             super();
@@ -65,12 +61,9 @@ export function createComponent(definedElement: Document, href: string): [string
             this.#execScripts();
         }
 
-        connectedCallback(): void {
-            registerComponent(this.#uuid, this);
-        }
-
         disconnectedCallback(): void {
-            unregisterComponent(this.#uuid);
+            this.#cleanupFns.forEach((cleanup) => cleanup());
+            this.#cleanupFns.clear();
         }
 
         attributeChangedCallback(name: string, _oldValue: unknown, newValue: string | null): void {
@@ -181,42 +174,9 @@ export function createComponent(definedElement: Document, href: string): [string
 
         #execScripts(): void {
             for (const script of scripts) {
-                const isModule = script.getAttribute('type') === 'module';
-                const src = script.getAttribute('src');
-                if (src) {
-                    fetch(changeRelativeUrl(src, href))
-                        .then((res) => res.text())
-                        .then((code) => {
-                            this.#execScript(code, isModule);
-                        })
-                        .catch(console.error);
-                } else {
-                    this.#execScript(script.innerText, isModule);
-                }
-            }
-        }
-
-        #execScript(code: string, isModule: boolean): void {
-            if (isModule) {
-                const moduleCode = setThisForModuleScript(code, this.#uuid, href);
-                const url = URL.createObjectURL(new Blob([moduleCode], { type: 'text/javascript' }));
-                import(url).then(() => URL.revokeObjectURL(url)).catch(console.error);
-            } else {
-                const fn = Function(code);
-                try {
-                    fn.call(this);
-                } catch (e) {
-                    if (!(e instanceof Error)) {
-                        console.error(e);
-                        return;
-                    }
-                    const stack = ErrorStackModifier.fromError(e);
-                    const currentPlaceStackLength = ErrorStackModifier.current().items.length;
-                    const cutSize = currentPlaceStackLength - 2;
-                    const newStack = new ErrorStackModifier(stack.items.slice(0, -cutSize));
-                    newStack.applyToRow((r) => r.replace('Component.eval', selector));
-                    console.error(newStack.toString());
-                }
+                executeScript(script, relativeTo, this)
+                    .then((cleanup) => cleanup && this.#cleanupFns.add(cleanup))
+                    .catch(console.error);
             }
         }
 

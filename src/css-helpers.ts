@@ -1,4 +1,4 @@
-import {cloneNode} from './helpers.js';
+import {cloneNode} from "./helpers.js";
 
 const hostRe = /:host(\((.+)\))?/g;
 
