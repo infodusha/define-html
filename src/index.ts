@@ -18,5 +18,5 @@ async function defineHtml(href: string | null): Promise<void> {
     const response = await fetch(href);
     const text = await response.text();
     const definedElement = parser.parseFromString(text, 'text/html');
-    customElements.define(...createComponent(definedElement));
+    customElements.define(...createComponent(definedElement, href));
 }

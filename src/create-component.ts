@@ -21,7 +21,7 @@ interface Disconnected {
     disconnectedCallback(): void;
 }
 
-export function createComponent(definedElement: Document): [string, typeof HTMLElement] {
+export function createComponent(definedElement: Document, href: string): [string, typeof HTMLElement] {
     const template = returnIfDefined(definedElement.querySelector('template'), 'Template is required');
     const selector = returnIfDefined(template.getAttribute('data-selector'), 'Selector is required');
     const useShadow = template.hasAttribute('data-shadow');
@@ -181,7 +181,7 @@ export function createComponent(definedElement: Document): [string, typeof HTMLE
         #execScripts(): void {
             for (const script of scripts) {
                 if (script.getAttribute('type') === 'module') {
-                    const code = setThisForModuleScript(script.innerText, this.#uuid);
+                    const code = setThisForModuleScript(script.innerText, this.#uuid, href);
                     const url = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
                     import(url).then(() => URL.revokeObjectURL(url)).catch(console.error);
                 } else {

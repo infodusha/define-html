@@ -10,7 +10,8 @@ When using vanilla HTML + CSS we sometimes want to split HTML on files but do no
 
 Add link to preload external html file and define-html script in `head`:
 ```html
-...
+<head>
+    <!-- Other tags here -->
     <link rel="preload" href="content.html" as="fetch" crossorigin />
     <script src="https://unpkg.com/define-html" type="module"></script>
 </head>
@@ -30,9 +31,13 @@ So later you can use include your template with:
 
 * Read attribute values
 * Make conditional elements
+* Full slot support
+* Full style encapsulation
 * Optionally enable shadow root
-* Style encapsulation (even when not a shadow root mode)
-* Watch for attribute changes from js
+
+# Docs
+
+TBD
 
 # License
 
