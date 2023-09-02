@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.0.0](https://github.com/infodusha/define-html/compare/v1.10.0...v2.0.0) (2023-09-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* properties can now remove attributes
+* remove(add) optional elements from(in) DOM
+
+### Features
+
+* data-shadow can be a mode ([28b4e4f](https://github.com/infodusha/define-html/commit/28b4e4f0da9bc1e5ed97ba020ea880245692d364))
+* properties can now remove attributes ([ec65084](https://github.com/infodusha/define-html/commit/ec650845638678482958e6fde12127cc56efb525))
+* remove(add) optional elements from(in) DOM ([b305c72](https://github.com/infodusha/define-html/commit/b305c72a2a3056864614df4fbf8d5e577f996465))
+
 ## [1.10.0](https://github.com/infodusha/define-html/compare/v1.9.0...v1.10.0) (2023-09-02)
 
 
