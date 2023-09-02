@@ -19,7 +19,9 @@
     "html",
     "define",
     "import",
-    "include"
+    "include",
+    "component",
+    "components"
   ],
   "files": [
     "dist/",

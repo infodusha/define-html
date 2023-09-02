@@ -1,38 +1,30 @@
 <template data-selector="app-header">
     <header>
-        My name is: <b data-attr="name">Unknown</b>
-        <span data-if="name" data-if-equal="Andrei">
-            I see Andrei in you
-        </span>
-        <span data-if="admin">
-            I AM THE ADMIN
-        </span>
-        <span data-if="admin" data-if-not>
-            I am the user
-        </span>
-        <slot></slot>
+        <h1>define-html</h1>
+        <span class="counter">0</span>
     </header>
 </template>
 
 <style>
-    :host {
-        display: inline-block;
-    }
-
     header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        column-gap: 6px;
         background-color: wheat;
         padding: 1rem;
+    }
+
+    .counter {
+        font-size: 14pt;
     }
 </style>
 
 <script>
-    setTimeout(() => {
-        this.name = 'Test';
-    }, 3000);
-</script>
+    const counterRef = this.querySelector('.counter');
+    let count = Number(counterRef.innerText);
 
-<script type="module">
-    setTimeout(() => {
-        this.removeAttribute('name');
-    }, 6000);
+    setInterval(() => {
+        counterRef.innerText = ++count;
+    }, 1000);
 </script>

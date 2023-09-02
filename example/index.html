@@ -2,23 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>define-html example</title>
+    <title>define-html</title>
+    <link rel="preload" href="components/root.html" as="fetch" crossorigin />
+    <link rel="preload" href="components/card.html" as="fetch" crossorigin />
     <link rel="preload" href="header.html" as="fetch" crossorigin />
-    <link rel="preload" href="content.html" as="fetch" crossorigin />
+    <link rel="preload" href="footer.html" as="fetch" crossorigin />
     <script src="../dist/index.js" type="module"></script>
 </head>
 <body>
-    <header>
-        <h1>Hello there</h1>
-        <p>param pam</p>
-    </header>
-    <app-header name="Andrei" admin>extra data</app-header>
-    <app-header name="Vika"></app-header>
-    <app-content>
-        <span slot="slot1">Slot 1</span>
-        <span slot="slot2">Slot 2</span>
-        <div>global div</div>
-        Global
-    </app-content>
+    <app-root></app-root>
 </body>
 </html>

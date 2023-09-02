@@ -1,0 +1,16 @@
+<template data-selector="app-card">
+    <slot name="header">
+        <h3 data-attr="header">No header</h3>
+    </slot>
+    <slot>No data</slot>
+</template>
+
+<style>
+    :host {
+        display: flex;
+        flex-direction: column;
+        border-radius: 3px;
+        border: solid 1px black;
+        padding: 12px;
+    }
+</style>

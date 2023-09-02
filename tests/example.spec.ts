@@ -19,11 +19,11 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('opens example page', async ({ page }) => {
-  await expect(page).toHaveTitle('define-html example');
+  await expect(page).toHaveTitle('define-html');
 });
 
 test('app-header has content', async ({ page }) => {
-  const appHeader = page.locator('tag=app-header').first();
+  const appHeader = page.locator('tag=app-root').first();
   const appHeaderHtml = await appHeader.innerHTML();
   expect(appHeaderHtml.length).toBeGreaterThan(0)
 });
