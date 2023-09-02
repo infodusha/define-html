@@ -16,7 +16,7 @@ interface Disconnected {
 
 export function createComponent(definedElement: Document, relativeTo: string): [string, typeof HTMLElement] {
     const template = returnIfDefined(definedElement.querySelector('template'), 'Template is required');
-    const selector = returnIfDefined(template.getAttribute('data-selector'), 'Selector is required');
+    const selector = returnIfDefined(template.getAttribute('data-selector'), 'data-selector is required');
     const useShadow = template.hasAttribute('data-shadow');
 
     const styles: NodeListOf<HTMLStyleElement> = definedElement.querySelectorAll('style:not([data-global])');
@@ -74,7 +74,7 @@ export function createComponent(definedElement: Document, relativeTo: string): [
         #initOptionality(): void {
             for (const element of this.#optionalElements) {
                 if (!this.#isElementVisible(element)) {
-                    element.setAttribute('hidden', '')
+                    element.setAttribute('hidden', '');
                 }
             }
         }
@@ -95,9 +95,10 @@ export function createComponent(definedElement: Document, relativeTo: string): [
 
         #attach(content: DocumentFragment): void {
             if (useShadow) {
-                const shadowRoot = this.attachShadow({ mode: 'open' });
+                const mode = template.getAttribute('data-shadow') as ShadowRootMode | '' || 'open';
+                const shadowRoot = this.attachShadow({ mode });
                 shadowRoot.appendChild(content);
-                this.#setShadowStyles();
+                this.#setShadowStyles(shadowRoot);
             } else {
                 this.#emulateSlots(content);
                 this.appendChild(content);
@@ -165,10 +166,10 @@ export function createComponent(definedElement: Document, relativeTo: string): [
             }
         }
 
-        #setShadowStyles() {
+        #setShadowStyles(shadowRoot: ShadowRoot) {
             for (const style of styles) {
                 const element = style.cloneNode(true);
-                returnIfDefined(this.shadowRoot).appendChild(element);
+                returnIfDefined(shadowRoot).appendChild(element);
             }
         }
 
