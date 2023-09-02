@@ -1,6 +1,7 @@
 import {ErrorStackModifier} from './error-stack-modifier.js';
 import {appendCssLink, applyGlobalStyles, getEncapsulatedCss} from './css-helpers.js';
 import {
+    changeRelativeUrl,
     cloneNode,
     registerComponent,
     returnIfDefined,
@@ -180,26 +181,41 @@ export function createComponent(definedElement: Document, href: string): [string
 
         #execScripts(): void {
             for (const script of scripts) {
-                if (script.getAttribute('type') === 'module') {
-                    const code = setThisForModuleScript(script.innerText, this.#uuid, href);
-                    const url = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
-                    import(url).then(() => URL.revokeObjectURL(url)).catch(console.error);
+                const isModule = script.getAttribute('type') === 'module';
+                const src = script.getAttribute('src');
+                if (src) {
+                    fetch(changeRelativeUrl(src, href))
+                        .then((res) => res.text())
+                        .then((code) => {
+                            this.#execScript(code, isModule);
+                        })
+                        .catch(console.error);
                 } else {
-                    const fn = Function(script.innerText);
-                    try {
-                        fn.call(this);
-                    } catch (e) {
-                        if (!(e instanceof Error)) {
-                           console.error(e);
-                           continue;
-                        }
-                        const stack = ErrorStackModifier.fromError(e);
-                        const currentPlaceStackLength = ErrorStackModifier.current().items.length;
-                        const cutSize = currentPlaceStackLength - 2;
-                        const newStack = new ErrorStackModifier(stack.items.slice(0, -cutSize));
-                        newStack.applyToRow((r) => r.replace('DefineHTMLElement.eval', selector));
-                        console.error(newStack.toString());
+                    this.#execScript(script.innerText, isModule);
+                }
+            }
+        }
+
+        #execScript(code: string, isModule: boolean): void {
+            if (isModule) {
+                const moduleCode = setThisForModuleScript(code, this.#uuid, href);
+                const url = URL.createObjectURL(new Blob([moduleCode], { type: 'text/javascript' }));
+                import(url).then(() => URL.revokeObjectURL(url)).catch(console.error);
+            } else {
+                const fn = Function(code);
+                try {
+                    fn.call(this);
+                } catch (e) {
+                    if (!(e instanceof Error)) {
+                        console.error(e);
+                        return;
                     }
+                    const stack = ErrorStackModifier.fromError(e);
+                    const currentPlaceStackLength = ErrorStackModifier.current().items.length;
+                    const cutSize = currentPlaceStackLength - 2;
+                    const newStack = new ErrorStackModifier(stack.items.slice(0, -cutSize));
+                    newStack.applyToRow((r) => r.replace('Component.eval', selector));
+                    console.error(newStack.toString());
                 }
             }
         }

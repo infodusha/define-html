@@ -34,7 +34,10 @@ export function unregisterComponent(uuid: string): void {
     window[registeredComponentsSymbol].delete(uuid);
 }
 
-function changeRelativeUrl(href: string, relativeTo: string) {
+export function changeRelativeUrl(href: string, relativeTo: string) {
+    if (!href.startsWith('.')) {
+        return href;
+    }
     if (!relativeTo.startsWith('http') && !relativeTo.startsWith('//')) {
         relativeTo = new URL(relativeTo, document.location.href).href;
     }
