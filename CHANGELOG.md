@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.9.0](https://github.com/infodusha/define-html/compare/v1.8.2...v1.9.0) (2023-09-02)
+
+
+### Features
+
+* attrs have defaults ([01b3828](https://github.com/infodusha/define-html/commit/01b3828fed2c3a5cd7044d7825f3deb01436e882))
+* better example ([328d463](https://github.com/infodusha/define-html/commit/328d463d840163dda6e5dfe2aa56de2896757628))
+* script src woks ([f578b1f](https://github.com/infodusha/define-html/commit/f578b1f01227c2d3287b46cedce6b2a245ca3f3f))
+
+
+### Bug Fixes
+
+* script module relative imports work ([41935da](https://github.com/infodusha/define-html/commit/41935da3f2a477a61961ef3a6ac1278830795ffc))
+
 ## [1.8.2](https://github.com/infodusha/define-html/compare/v1.8.1...v1.8.2) (2023-08-27)
 
 
