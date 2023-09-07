@@ -12,7 +12,8 @@ interface Disconnected {
 
 export function createComponent(definedElement: Document, relativeTo: string): [string, typeof HTMLElement] {
     const template = returnIfDefined(definedElement.querySelector('template'), 'Template is required');
-    const selector = returnIfDefined(template.getAttribute('data-selector'), 'data-selector is required');
+    const filename = returnIfDefined(relativeTo.split('/').pop()).replace(/\.html$/, '');
+    const selector = template.getAttribute('data-selector') ?? filename;
     const useShadow = template.hasAttribute('data-shadow');
 
     const styles: NodeListOf<HTMLStyleElement> = definedElement.querySelectorAll('style:not([data-global])');

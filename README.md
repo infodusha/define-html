@@ -12,13 +12,13 @@ Add link to preload external html file and define-html script in `head`:
 ```html
 <head>
     <!-- Other tags here -->
-    <link rel="preload" href="content.html" as="fetch" crossorigin />
+    <link rel="preload" href="app-content.html" as="fetch" crossorigin />
     <script src="https://unpkg.com/define-html" type="module"></script>
 </head>
 ```
-Where `content.html` is:
+Where `app-content.html` is:
 ```html
-<template data-selector="app-content">
+<template>
     Lorem ipsum
 </template>
 ```
