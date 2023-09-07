@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/infodusha/define-html/compare/v2.0.0...v2.1.0) (2023-09-07)
+
+
+### Features
+
+* selector read from filename ([882dc0c](https://github.com/infodusha/define-html/commit/882dc0c73d7ee24409877ef779caf16040096ce7))
+
 ## [2.0.0](https://github.com/infodusha/define-html/compare/v1.10.0...v2.0.0) (2023-09-02)
 
 
