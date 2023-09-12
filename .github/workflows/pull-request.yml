@@ -8,13 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: oven-sh/setup-bun@v1
+      - uses: actions/setup-node@v3
         with:
-          bun-version: "1.0.0"
-      - run: bun install --frozen-lockfile
-      - run: bun x playwright install --with-deps
-      - run: bun run build
-      - run: bun run test
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - run: npm run build
+      - run: npm run test
       - uses: actions/upload-artifact@v3
         if: always()
         with:
