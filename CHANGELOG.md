@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/infodusha/define-html/compare/v2.2.0...v2.2.1) (2023-09-12)
+
+
+### Bug Fixes
+
+* rollback bun ([a54ad4b](https://github.com/infodusha/define-html/commit/a54ad4b640f252675bf5e4a26bdad88f08964596))
+
 ## [2.2.0](https://github.com/infodusha/define-html/compare/v2.3.0...v2.2.0) (2023-09-12)
 
 
