@@ -19,18 +19,17 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
       - uses: actions/checkout@v3
         if: ${{ steps.release.outputs.release_created }}
-      - uses: actions/setup-node@v3
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
+          bun-version: "1.0.0"
         if: ${{ steps.release.outputs.release_created }}
-      - run: npm install -g npm
+      - run: bun add -g npm
         if: ${{ steps.release.outputs.release_created }}
-      - run: npm ci
+      - run: bun install --frozen-lockfile
         if: ${{ steps.release.outputs.release_created }}
-      - run: npm run build
+      - run: bun run build
         if: ${{ steps.release.outputs.release_created }}
-      - run: npm publish --provenance --access public
+      - run: bun x npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}

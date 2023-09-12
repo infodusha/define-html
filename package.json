@@ -7,7 +7,7 @@
   "scripts": {
     "start": "http-server --cors --a localhost -p 3000",
     "watch": "tsc -w",
-    "build": "tsc",
+    "build": "bun build ./src/index.ts --outdir ./dist",
     "test": "playwright test",
     "test:local": "playwright test --ui"
   },
