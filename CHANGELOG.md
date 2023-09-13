@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/infodusha/define-html/compare/v2.2.1...v2.3.0) (2023-09-13)
+
+
+### Features
+
+* move to bun again ([038af1d](https://github.com/infodusha/define-html/commit/038af1d5099c6fced61e27a830240939b95cc9ff))
+
 ## [2.2.1](https://github.com/infodusha/define-html/compare/v2.2.0...v2.2.1) (2023-09-12)
 
 
