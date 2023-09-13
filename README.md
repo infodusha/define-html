@@ -39,6 +39,10 @@ So later you can use include your template with:
 
 TBD
 
+# Development
+
+This project uses [Bun](https://bun.sh) as a build tool and package manager.
+
 # License
 
 Apache-2.0
