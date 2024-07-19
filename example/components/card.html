@@ -1,27 +1,27 @@
 <template data-selector="app-card">
-    <slot name="header">
-        <h3 data-attr="header">No header</h3>
-    </slot>
-    <slot>No data</slot>
-    <button data-if="action">Action</button>
-    <span data-if="action" data-if-not>No action</span>
+	<slot name="header">
+		<h3 data-attr="header">No header</h3>
+	</slot>
+	<slot>No data</slot>
+	<button data-if="action">Action</button>
+	<span data-if="action" data-if-not>No action</span>
 </template>
 
 <style>
-    :host {
-        display: flex;
-        flex-direction: column;
-        row-gap: 6px;
-        border-radius: 3px;
-        border: solid 1px black;
-        padding: 12px;
-    }
+	:host {
+		display: flex;
+		flex-direction: column;
+		row-gap: 6px;
+		border-radius: 3px;
+		border: solid 1px black;
+		padding: 12px;
+	}
 </style>
 
 <script>
-    setInterval(() => {
-        this.action = this.action === '' ? null : '';
-    }, 1500);
+	setInterval(() => {
+		this.action = this.action === "" ? null : "";
+	}, 1500);
 </script>
 
 <script src="../scripts/card.js"></script>

@@ -1,40 +1,35 @@
 {
-  "name": "define-html",
-  "version": "2.3.0",
-  "description": "Define custom element to import in html",
-  "main": "dist/index.js",
-  "type": "module",
-  "scripts": {
-    "start": "http-server --cors --a localhost -p 3000",
-    "watch": "bun build ./src/index.ts --outdir ./dist --watch",
-    "build": "bun build ./src/index.ts --outdir ./dist",
-    "test": "playwright test",
-    "test:local": "playwright test --ui"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/infodusha/define-html.git"
-  },
-  "keywords": [
-    "html",
-    "define",
-    "import",
-    "include",
-    "component",
-    "components"
-  ],
-  "files": [
-    "dist/",
-    "package.json",
-    "LICENSE",
-    "README.md",
-    "CHANGELOG.md"
-  ],
-  "author": "infodusha",
-  "license": "Apache-2.0",
-  "devDependencies": {
-    "@playwright/test": "^1.37.1",
-    "http-server": "^14.1.1",
-    "typescript": "^5.2.2"
-  }
+	"name": "define-html",
+	"version": "2.3.0",
+	"description": "Define custom element to import in html",
+	"main": "dist/index.js",
+	"type": "module",
+	"scripts": {
+		"start": "http-server --cors --a localhost -p 3000",
+		"watch": "bun build ./src/index.ts --outdir ./dist --watch",
+		"build": "bun build ./src/index.ts --outdir ./dist",
+		"test": "playwright test",
+		"test:local": "playwright test --ui"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/infodusha/define-html.git"
+	},
+	"keywords": [
+		"html",
+		"define",
+		"import",
+		"include",
+		"component",
+		"components"
+	],
+	"files": ["dist/", "package.json", "LICENSE", "README.md", "CHANGELOG.md"],
+	"author": "infodusha",
+	"license": "Apache-2.0",
+	"devDependencies": {
+		"@biomejs/biome": "1.8.3",
+		"@playwright/test": "^1.37.1",
+		"http-server": "^14.1.1",
+		"typescript": "^5.2.2"
+	}
 }

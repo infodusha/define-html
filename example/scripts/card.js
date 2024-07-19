@@ -1,1 +1,1 @@
-console.log('card', this);
+console.log("card", this);

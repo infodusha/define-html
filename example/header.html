@@ -1,30 +1,30 @@
 <template data-selector="app-header">
-    <header>
-        <h1>define-html</h1>
-        <span class="counter">0</span>
-    </header>
+	<header>
+		<h1>define-html</h1>
+		<span class="counter">0</span>
+	</header>
 </template>
 
 <style>
-    header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        column-gap: 6px;
-        background-color: wheat;
-        padding: 1rem;
-    }
+	header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		column-gap: 6px;
+		background-color: wheat;
+		padding: 1rem;
+	}
 
-    .counter {
-        font-size: 14pt;
-    }
+	.counter {
+		font-size: 14pt;
+	}
 </style>
 
 <script>
-    const counterRef = this.querySelector('.counter');
-    let count = Number(counterRef.innerText);
+	const counterRef = this.querySelector(".counter");
+	let count = Number(counterRef.innerText);
 
-    setInterval(() => {
-        counterRef.innerText = ++count;
-    }, 1000);
+	setInterval(() => {
+		counterRef.innerText = ++count;
+	}, 1000);
 </script>

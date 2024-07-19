@@ -1,45 +1,45 @@
 <template>
-    <app-header></app-header>
-    <div class="cards">
-        <app-card header="Easy to install">
-            Just add script tag and it works
-        </app-card>
-        <app-card action></app-card>
-        <app-card>
-            <i slot="header">Easy to understand</i>
-            No complex parts at all - just plain HTML
-        </app-card>
-    </div>
-    <app-footer></app-footer>
+	<app-header></app-header>
+	<div class="cards">
+		<app-card header="Easy to install">
+			Just add script tag and it works
+		</app-card>
+		<app-card action></app-card>
+		<app-card>
+			<i slot="header">Easy to understand</i>
+			No complex parts at all - just plain HTML
+		</app-card>
+	</div>
+	<app-footer></app-footer>
 </template>
 
 <style>
-    :host {
-        display: flex;
-        flex-direction: column;
-        row-gap: 12px;
-    }
+	:host {
+		display: flex;
+		flex-direction: column;
+		row-gap: 12px;
+	}
 
-    .cards {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 6px;
-    }
+	.cards {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 6px;
+	}
 
-    body {
-        /* Don't work since styles are encapsulated  */
-        background-color: red;
-    }
+	body {
+		/* Don't work since styles are encapsulated  */
+		background-color: red;
+	}
 </style>
 
 <style data-global>
-   body {
-       margin: 4%;
-   }
+	body {
+		margin: 4%;
+	}
 </style>
 
 <script type="module">
-    import { log } from '../scripts/utils.js';
+	import { log } from "../scripts/utils.js";
 
-    log(this);
+	log(this);
 </script>
