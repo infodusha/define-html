@@ -37,7 +37,7 @@ So later you can use include your template with:
 
 # Docs
 
-TBD
+[Read the docs](./DOCS.md)
 
 # Development
 
