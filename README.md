@@ -2,13 +2,14 @@
 
 Define custom element to import in html
 
-# Motivation
+## Motivation
 
 When using vanilla HTML + CSS we sometimes want to split HTML on files but do not use powerful and hard solutions
 
-# Usage
+## Usage
 
 Add link to preload external html file and define-html script in `head`:
+
 ```html
 <head>
     <!-- Other tags here -->
@@ -16,18 +17,22 @@ Add link to preload external html file and define-html script in `head`:
     <script src="https://unpkg.com/define-html" type="module"></script>
 </head>
 ```
+
 Where `app-content.html` is:
+
 ```html
 <template>
     Lorem ipsum
 </template>
 ```
+
 So later you can use include your template with:
+
 ```html
 <app-content></app-content>
 ```
 
-# Features
+## Features
 
 * Read attribute values
 * Make conditional elements
@@ -35,14 +40,14 @@ So later you can use include your template with:
 * Full style encapsulation
 * Optionally enable shadow root
 
-# Docs
+## Docs
 
 [Read the docs](./DOCS.md)
 
-# Development
+## Development
 
 This project uses [Bun](https://bun.sh) as a build tool and package manager.
 
-# License
+## License
 
 Apache-2.0
