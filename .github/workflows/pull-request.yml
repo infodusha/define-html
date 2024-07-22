@@ -14,6 +14,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun x playwright install --with-deps
       - run: bun run build
+      - run: bun run build:bin
       - run: bun run test
       - uses: actions/upload-artifact@v3
         if: always()

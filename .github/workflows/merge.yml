@@ -29,6 +29,8 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
       - run: bun run build
         if: ${{ steps.release.outputs.release_created }}
+      - run: bun run build:bin
+        if: ${{ steps.release.outputs.release_created }}
       - run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
