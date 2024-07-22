@@ -1,28 +1,45 @@
 import { createComponent } from "./create-component.js";
-import { throwIfNotDefined } from "./helpers.js";
+import {
+	commentMarker,
+	getComponentLinks,
+	returnIfDefined,
+} from "./helpers.js";
 
 const parser = new DOMParser();
-const ignoreDataAttribute = "data-define-html-ignore";
 
 document.addEventListener("DOMContentLoaded", () => {
-	fetchFromLinks(document).catch(console.error);
+	fetchFromLinks().catch(console.error);
+	getFromComments();
 });
 
-async function fetchFromLinks(element: Document): Promise<void> {
-	const links = Array.from(
-		element.querySelectorAll(
-			`link[rel='preload'][as='fetch'][href$='.html']:not([${ignoreDataAttribute}])`
-		)
-	);
-	await Promise.all(
-		links.map((link) => link.getAttribute("href")).map(defineHtml)
-	);
+async function fetchFromLinks(): Promise<void> {
+	await Promise.all(getComponentLinks(document).map(defineHtml));
 }
 
-async function defineHtml(href: string | null): Promise<void> {
-	throwIfNotDefined(href);
+async function defineHtml(link: HTMLLinkElement): Promise<void> {
+	const href = returnIfDefined(link.getAttribute("href"));
 	const response = await fetch(href);
 	const text = await response.text();
 	const definedElement = parser.parseFromString(text, "text/html");
 	customElements.define(...createComponent(definedElement, href));
+}
+
+function getFromComments() {
+	for (const node of document.head.childNodes) {
+		if (node.nodeType !== Node.COMMENT_NODE) {
+			continue;
+		}
+		if (!node.textContent?.startsWith(commentMarker)) {
+			continue;
+		}
+		const [href, text] = node.textContent
+			.replace(commentMarker, "")
+			.split(/\n(.*)/s);
+		if (!text || !href) {
+			continue;
+		}
+
+		const definedElement = parser.parseFromString(text, "text/html");
+		customElements.define(...createComponent(definedElement, href));
+	}
 }

@@ -1,4 +1,4 @@
-import { test, expect, selectors } from "@playwright/test";
+import { expect, selectors, test } from "@playwright/test";
 
 function createTagNameEngine() {
 	return {

@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"lib": ["ESNext"],
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleDetection": "force",
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"noEmit": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noPropertyAccessFromIndexSignature": true
+	},
+	"include": ["src/bin.ts"],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"src/**/*.ts",
+		"tests/**/*.spec.ts",
+		"playwright.config.ts"
+	]
+}

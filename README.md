@@ -44,9 +44,35 @@ So later you can use include your template with:
 
 [Read the docs](./DOCS.md)
 
+## Compiler (optional)
+
+Additionally, you can compile your components inside your pages.
+
+Install [node](https://nodejs.org) or [bun](https://bun.sh/) and run:
+
+```sh
+npx --yes define-html
+```
+
+or
+
+```sh
+bunx define-html
+```
+
+This will create `dist` folder with the output files.
+
 ## Development
 
 This project uses [Bun](https://bun.sh) as a build tool and package manager.
+
+## Roadmap
+
+Improve compiler:
+
+* Copy define-html script itself
+* Compile css
+* Compile scripts
 
 ## License
 

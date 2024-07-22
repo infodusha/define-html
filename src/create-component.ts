@@ -3,14 +3,14 @@ import {
 	applyGlobalStyles,
 	getEncapsulatedCss,
 } from "./css-helpers.js";
-import { cloneNode, returnIfDefined, throwIfNotDefined } from "./helpers.js";
 import { type CleanupFn, executeScript } from "./execute-script.js";
+import { cloneNode, returnIfDefined, throwIfNotDefined } from "./helpers.js";
 
 interface AttributeChanged {
 	attributeChangedCallback(
 		name: string,
 		oldValue: string | null,
-		newValue: string | null
+		newValue: string | null,
 	): void;
 }
 
@@ -20,21 +20,21 @@ interface Disconnected {
 
 export function createComponent(
 	definedElement: Document,
-	relativeTo: string
+	relativeTo: string,
 ): [string, typeof HTMLElement] {
 	const template = returnIfDefined(
 		definedElement.querySelector("template"),
-		"Template is required"
+		"Template is required",
 	);
 	const filename = returnIfDefined(relativeTo.split("/").pop()).replace(
 		/\.html$/,
-		""
+		"",
 	);
 	const selector = template.getAttribute("data-selector") ?? filename;
 	const useShadow = template.hasAttribute("data-shadow");
 
 	const styles: NodeListOf<HTMLStyleElement> = definedElement.querySelectorAll(
-		"style:not([data-global])"
+		"style:not([data-global])",
 	);
 	const scripts: NodeListOf<HTMLScriptElement> =
 		definedElement.querySelectorAll("script:not([data-global])");
@@ -79,7 +79,7 @@ export function createComponent(
 			const content = cloneNode(template.content);
 			this.#attrElements = Array.from(content.querySelectorAll("[data-attr]"));
 			this.#optionalElements = Array.from(
-				content.querySelectorAll("[data-if]")
+				content.querySelectorAll("[data-if]"),
 			);
 			this.#initOptionality();
 			this.#attach(content);
@@ -98,7 +98,7 @@ export function createComponent(
 		attributeChangedCallback(
 			name: string,
 			_oldValue: unknown,
-			newValue: string | null
+			newValue: string | null,
 		): void {
 			this.#applyAttr(name, newValue);
 			this.#applyOptionality(name);
@@ -166,7 +166,7 @@ export function createComponent(
 						const slot = content.querySelector(`slot[name=${slotName}]`);
 						if (!slot) {
 							console.warn(
-								`No slot with name "${slotName}" found for ${selector}`
+								`No slot with name "${slotName}" found for ${selector}`,
 							);
 							continue;
 						}
@@ -193,7 +193,7 @@ export function createComponent(
 
 		#applyAttr(name: string, value: string | null): void {
 			const attrElements = this.#attrElements.filter(
-				(element) => element.getAttribute("data-attr") === name
+				(element) => element.getAttribute("data-attr") === name,
 			);
 			for (const element of attrElements) {
 				if (value !== null) {
@@ -208,7 +208,7 @@ export function createComponent(
 
 		#applyOptionality(name: string): void {
 			const optionalForElements = this.#optionalElements.filter(
-				(element) => element.getAttribute("data-if") === name
+				(element) => element.getAttribute("data-if") === name,
 			);
 			for (const element of optionalForElements) {
 				if (this.#isElementVisible(element)) {
@@ -275,12 +275,12 @@ export function createComponent(
 
 function getUsedAttributes(
 	template: HTMLTemplateElement,
-	attributeNames: string[]
+	attributeNames: string[],
 ): string[] {
 	return attributeNames
 		.flatMap((attributeName) => {
 			return Array.from(
-				template.content.querySelectorAll(`[${attributeName}]`)
+				template.content.querySelectorAll(`[${attributeName}]`),
 			).map((element) => returnIfDefined(element.getAttribute(attributeName)));
 		})
 		.filter((v, i, arr) => arr.indexOf(v) === i);

@@ -20,7 +20,7 @@ window[scriptContextSymbol] = new Map<string, Element>();
 
 async function getCode(
 	element: HTMLScriptElement,
-	relativeTo: string
+	relativeTo: string,
 ): Promise<string> {
 	const src = element.getAttribute("src");
 	if (src) {
@@ -52,7 +52,7 @@ function changeImport(match: RegExpMatchArray, relativeTo: string): string {
 function setContextForModuleScript(
 	code: string,
 	uuid: string,
-	relativeTo: string
+	relativeTo: string,
 ): string {
 	const imports = [...code.matchAll(importRe)]
 		.map((match) => changeImport(match, relativeTo))
@@ -60,14 +60,14 @@ function setContextForModuleScript(
 	const component = `window[Symbol.for('${scriptContextSymbolKey}')].get('${uuid}')`;
 	return `${imports}\n(function () {\n${code.replaceAll(
 		importRe,
-		""
+		"",
 	)}\n}).call(${component});`;
 }
 
 async function executeModule(
 	code: string,
 	relativeTo: string,
-	context?: Element
+	context?: Element,
 ): Promise<CleanupFn | undefined> {
 	let cleanup: CleanupFn | undefined = undefined;
 	let jsCode = code;
@@ -78,7 +78,7 @@ async function executeModule(
 		cleanup = () => window[scriptContextSymbol].delete(uuid);
 	}
 	const url = URL.createObjectURL(
-		new Blob([jsCode], { type: "text/javascript" })
+		new Blob([jsCode], { type: "text/javascript" }),
 	);
 	await import(url);
 	URL.revokeObjectURL(url);
@@ -110,17 +110,17 @@ function execute(code: string, context?: Element): CleanupFn | undefined {
 
 export async function executeScript(
 	element: HTMLScriptElement,
-	relativeTo: string
+	relativeTo: string,
 ): Promise<undefined>;
 export async function executeScript(
 	element: HTMLScriptElement,
 	relativeTo: string,
-	context: Element
+	context: Element,
 ): Promise<CleanupFn>;
 export async function executeScript(
 	element: HTMLScriptElement,
 	relativeTo: string,
-	context?: Element
+	context?: Element,
 ): Promise<CleanupFn | undefined> {
 	const code = await getCode(element, relativeTo);
 	const isModule = element.getAttribute("type") === "module";
