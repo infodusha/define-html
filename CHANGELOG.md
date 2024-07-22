@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.1](https://github.com/infodusha/define-html/compare/v2.4.0...v2.4.1) (2024-07-22)
+
+
+### Bug Fixes
+
+* build compiler ([f53be7c](https://github.com/infodusha/define-html/commit/f53be7cf7a7e1a384c6cd7b47f220c04d8657f36))
+
 ## [2.4.0](https://github.com/infodusha/define-html/compare/v2.3.0...v2.4.0) (2024-07-22)
 
 
