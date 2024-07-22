@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.5.0](https://github.com/infodusha/define-html/compare/v2.4.2...v2.5.0) (2024-07-22)
+
+
+### Features
+
+* outdir for compiler ([045d782](https://github.com/infodusha/define-html/commit/045d782ff1d6a4576af7cc22fe46e0cc8c5d24e7))
+* replace jsdom with cheerio ([adfe095](https://github.com/infodusha/define-html/commit/adfe09553cf65fa59ec256ff626731b94b593cce))
+
 ## [2.4.2](https://github.com/infodusha/define-html/compare/v2.4.1...v2.4.2) (2024-07-22)
 
 
