@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.2](https://github.com/infodusha/define-html/compare/v2.4.1...v2.4.2) (2024-07-22)
+
+
+### Bug Fixes
+
+* make bin work ([f5f650a](https://github.com/infodusha/define-html/commit/f5f650ad9bf9f552deaed5394b7d7fb17050df4c))
+
 ## [2.4.1](https://github.com/infodusha/define-html/compare/v2.4.0...v2.4.1) (2024-07-22)
 
 
