@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 import fg from "fast-glob";
-import { JSDOM } from "jsdom";
+import * as cheerio from "cheerio";
 
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 
-import { commentMarker, getComponentLinks } from "./helpers";
+import { commentMarker, componentSelector } from "./helpers";
 
 // TODO get from args
 const DIST_DIR = "./dist";
@@ -20,9 +20,9 @@ const pages = new Set<string>();
 
 for (const path of files) {
 	const text = await readFile(path, "utf8");
-	const dom = new JSDOM(text);
+	const $ = cheerio.load(text);
 
-	const links = getComponentLinks(dom.window.document);
+	const links = $(componentSelector);
 	if (links.length === 0) {
 		if (!components.has(path)) {
 			pages.add(path);
@@ -33,19 +33,17 @@ for (const path of files) {
 	console.log(`${path} has ${links.length} components`);
 
 	for (const link of links) {
-		const component = relative(dirname(path), link.href);
+		const component = relative(dirname(path), link.attribs.href);
 		components.add(component);
 		pages.delete(component);
 		const text = await readFile(component, "utf8");
-		const comment = dom.window.document.createComment(
-			`${commentMarker}${component}\n${text}`
-		);
-		link.before(comment);
-		link.remove();
+		$(`<!--${commentMarker}${component}\n${text}-->`).insertBefore(link);
 	}
 
+	$(componentSelector).remove();
+
 	const out = await prepareSave(path);
-	await writeFile(out, dom.serialize());
+	await writeFile(out, $.html());
 }
 
 for (const page of pages) {

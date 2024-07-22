@@ -1,7 +1,7 @@
 import { createComponent } from "./create-component.js";
 import {
 	commentMarker,
-	getComponentLinks,
+	componentSelector,
 	returnIfDefined,
 } from "./helpers.js";
 
@@ -13,7 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function fetchFromLinks(): Promise<void> {
-	await Promise.all(getComponentLinks(document).map(defineHtml));
+	const links = Array.from<HTMLLinkElement>(
+		document.querySelectorAll(componentSelector)
+	);
+	await Promise.all(links.map(defineHtml));
 }
 
 async function defineHtml(link: HTMLLinkElement): Promise<void> {

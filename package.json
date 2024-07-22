@@ -12,7 +12,7 @@
 		"watch": "bun build ./src/index.ts --outdir ./dist --watch",
 		"build": "bun build ./src/index.ts --outdir ./dist",
 		"build:bin": "bun build ./src/bin.ts --target node --outdir ./dist",
-		"compile": "cd example && bun ../src/bin.ts --outdir ./dist",
+		"compile": "cd example && bun --bun ../src/bin.ts --outdir ./dist",
 		"lint": "bunx biome lint",
 		"test": "playwright test",
 		"test:local": "playwright test --ui"
@@ -44,12 +44,11 @@
 	"devDependencies": {
 		"@biomejs/biome": "1.8.3",
 		"@playwright/test": "^1.37.1",
-		"@types/jsdom": "^21.1.7",
 		"http-server": "^14.1.1",
 		"typescript": "^5.2.2"
 	},
 	"dependencies": {
-		"fast-glob": "^3.3.2",
-		"jsdom": "^24.1.1"
+		"cheerio": "^1.0.0-rc.12",
+		"fast-glob": "^3.3.2"
 	}
 }

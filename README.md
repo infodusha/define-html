@@ -57,7 +57,7 @@ npx --yes define-html
 or
 
 ```sh
-bunx define-html
+bunx --bun define-html
 ```
 
 This will create `dist` folder with the output files.
