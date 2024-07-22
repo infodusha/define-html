@@ -12,7 +12,7 @@
 		"watch": "bun build ./src/index.ts --outdir ./dist --watch",
 		"build": "bun build ./src/index.ts --outdir ./dist",
 		"build:bin": "bun build ./src/bin.ts --target node --outdir ./dist",
-		"compile": "cd example && bun --bun ../src/bin.ts",
+		"compile": "cd example && bun ../src/bin.ts --remote",
 		"lint": "bunx biome lint",
 		"test": "playwright test",
 		"test:local": "playwright test --ui"

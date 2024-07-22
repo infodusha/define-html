@@ -6,8 +6,11 @@ import * as cheerio from "cheerio";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { fileURLToPath } from "node:url";
 
 import { commentMarker, componentSelector, returnIfDefined } from "./helpers";
+
+const RUNTIME_FILE = "define-html.js";
 
 const options = {
 	outdir: {
@@ -15,10 +18,16 @@ const options = {
 		short: "o",
 		default: "./dist",
 	},
+	remote: {
+		type: "boolean",
+		short: "r",
+		default: false,
+	},
 } as const;
 
 const { values } = parseArgs({ args: process.argv.slice(2), options });
 
+const COPY_RUNTIME = !returnIfDefined(values.remote);
 const DIST_DIR = returnIfDefined(values.outdir);
 
 const files = await fg("**/*.html", {
@@ -52,6 +61,11 @@ for (const path of files) {
 
 	$(componentSelector).remove();
 
+	if (COPY_RUNTIME) {
+		const runtime_path = relative(dirname(path), RUNTIME_FILE);
+		$(`script[src$='define-html']`).attr("src", runtime_path);
+	}
+
 	const out = await prepareSave(path);
 	await writeFile(out, $.html());
 }
@@ -69,6 +83,12 @@ const assets = await fg("**/*", {
 for (const asset of assets) {
 	const out = await prepareSave(asset);
 	await copyFile(asset, out);
+}
+
+if (COPY_RUNTIME) {
+	const main = resolve(dirname(fileURLToPath(import.meta.url)), "index.js");
+	await copyFile(main, resolve(DIST_DIR, RUNTIME_FILE));
+	console.log("Runtime copied");
 }
 
 console.log("Done");

@@ -70,7 +70,6 @@ This project uses [Bun](https://bun.sh) as a build tool and package manager.
 
 Improve compiler:
 
-* Copy define-html script itself
 * Compile css
 * Compile scripts
 
