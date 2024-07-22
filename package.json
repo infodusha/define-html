@@ -4,7 +4,9 @@
 	"description": "Define custom element to import in html",
 	"main": "dist/index.js",
 	"type": "module",
-	"bin": "dist/bin.js",
+	"bin": {
+		"define-html": "dist/bin.js"
+	},
 	"scripts": {
 		"start": "http-server --cors --a localhost -p 3000",
 		"watch": "bun build ./src/index.ts --outdir ./dist --watch",

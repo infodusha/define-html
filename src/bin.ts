@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import fg from "fast-glob";
 import { JSDOM } from "jsdom";
 
