@@ -5,11 +5,21 @@ import * as cheerio from "cheerio";
 
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
+import { parseArgs } from "node:util";
 
-import { commentMarker, componentSelector } from "./helpers";
+import { commentMarker, componentSelector, returnIfDefined } from "./helpers";
 
-// TODO get from args
-const DIST_DIR = "./dist";
+const options = {
+	outdir: {
+		type: "string",
+		short: "o",
+		default: "./dist",
+	},
+} as const;
+
+const { values } = parseArgs({ args: process.argv.slice(2), options });
+
+const DIST_DIR = returnIfDefined(values.outdir);
 
 const files = await fg("**/*.html", {
 	ignore: ["**/node_modules/**", `${DIST_DIR}/**`],
