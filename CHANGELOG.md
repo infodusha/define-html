@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0](https://github.com/infodusha/define-html/compare/v2.5.0...v2.6.0) (2024-07-22)
+
+
+### Features
+
+* **compiler:** add runtime copy ([3104cca](https://github.com/infodusha/define-html/commit/3104ccabfe3f6cd9d24fd33ad9f2d858f10b11d0))
+
 ## [2.5.0](https://github.com/infodusha/define-html/compare/v2.4.2...v2.5.0) (2024-07-22)
 
 
