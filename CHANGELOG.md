@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.4.0](https://github.com/infodusha/define-html/compare/v2.3.0...v2.4.0) (2024-07-22)
+
+
+### Features
+
+* add biome ([50bf902](https://github.com/infodusha/define-html/commit/50bf90280fde6112ef30edbb3cbdddbd8b2e1e16))
+* add docs ([1884ce1](https://github.com/infodusha/define-html/commit/1884ce17af3055f695f7bce0037f60bdec769465))
+* add more docs ([3d3b7a3](https://github.com/infodusha/define-html/commit/3d3b7a3cbafc13c492bb5983b3a13cd00aa4b664))
+* introduce compiler ([9b8e3d8](https://github.com/infodusha/define-html/commit/9b8e3d8d8758dbd5c2249c35a91be0554afaebee))
+
 ## [2.3.0](https://github.com/infodusha/define-html/compare/v2.2.1...v2.3.0) (2023-09-13)
 
 
