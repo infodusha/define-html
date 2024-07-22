@@ -48,6 +48,8 @@ So later you can use include your template with:
 
 Additionally, you can compile your components inside your pages.
 
+That may be useful when your run your app in production and you want to reduce load time for your users.
+
 Install [node](https://nodejs.org) or [bun](https://bun.sh/) and run:
 
 ```sh
@@ -60,7 +62,7 @@ or
 bunx --bun define-html
 ```
 
-This will create `dist` folder with the output files.
+This will create `dist` folder with the output files. Also, it will copy runtime and replace it in all pages.
 
 ## Development
 
