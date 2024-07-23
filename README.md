@@ -68,13 +68,6 @@ This will create `dist` folder with the output files. Also, it will copy runtime
 
 This project uses [Bun](https://bun.sh) as a build tool and package manager.
 
-## Roadmap
-
-Improve compiler:
-
-* Compile css
-* Compile scripts
-
 ## License
 
 Apache-2.0
