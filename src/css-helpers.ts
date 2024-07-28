@@ -1,3 +1,5 @@
+import { cloneNode } from "./helpers.js";
+
 const hostRe = /:host(\((.+)\))?/g;
 
 export function getEncapsulatedCss(
@@ -38,5 +40,7 @@ export function appendCssLink(cssText: string): void {
 export type GlobalStyle = HTMLStyleElement | HTMLLinkElement;
 
 export function getGlobalStyles(): GlobalStyle[] {
-	return Array.from(document.querySelectorAll("style, link[rel='stylesheet']"));
+	return Array.from(
+		document.querySelectorAll<GlobalStyle>("style, link[rel='stylesheet']")
+	).map((el) => cloneNode(el));
 }
