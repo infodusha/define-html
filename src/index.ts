@@ -1,4 +1,5 @@
 import { createComponent } from "./create-component.js";
+import { getGlobalStyles } from "./css-helpers.js";
 import {
 	commentMarker,
 	componentSelector,
@@ -11,10 +12,13 @@ type ComponentMeta = [string, string];
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
+		const globalStyles = getGlobalStyles();
 		const components = await getComponents();
 		for (const [text, href] of components) {
 			const definedElement = parser.parseFromString(text, "text/html");
-			customElements.define(...createComponent(definedElement, href));
+			customElements.define(
+				...createComponent(definedElement, href, globalStyles)
+			);
 		}
 	} catch (err) {
 		console.error(err);
@@ -41,8 +45,8 @@ async function getComponents(): Promise<ComponentMeta[]> {
 
 function getFromComments(): ComponentMeta[] {
 	return Array.from(document.head.childNodes)
-		.filter((node) => node.nodeType !== Node.COMMENT_NODE)
-		.filter((node) => !node.textContent?.startsWith(commentMarker))
+		.filter((node) => node.nodeType === Node.COMMENT_NODE)
+		.filter((node) => node.textContent?.startsWith(commentMarker))
 		.map((node) =>
 			returnIfDefined(node.textContent)
 				.replace(commentMarker, "")

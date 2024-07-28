@@ -34,3 +34,9 @@ export function appendCssLink(cssText: string): void {
 	document.head.appendChild(element);
 	URL.revokeObjectURL(url);
 }
+
+export type GlobalStyle = HTMLStyleElement | HTMLLinkElement;
+
+export function getGlobalStyles(): GlobalStyle[] {
+	return Array.from(document.querySelectorAll("style, link[rel='stylesheet']"));
+}

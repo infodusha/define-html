@@ -1,4 +1,8 @@
-import { appendCssLink, getEncapsulatedCss } from "./css-helpers.js";
+import {
+	appendCssLink,
+	getEncapsulatedCss,
+	type GlobalStyle,
+} from "./css-helpers.js";
 import { type CleanupFn, executeScript } from "./execute-script.js";
 import { cloneNode, returnIfDefined, throwIfNotDefined } from "./helpers.js";
 
@@ -16,7 +20,8 @@ interface Disconnected {
 
 export function createComponent(
 	definedElement: Document,
-	relativeTo: string
+	relativeTo: string,
+	globalStyles: GlobalStyle[]
 ): [string, typeof HTMLElement] {
 	const template = returnIfDefined(
 		definedElement.querySelector("template"),
@@ -214,8 +219,9 @@ export function createComponent(
 		#setShadowStyles(shadowRoot: ShadowRoot) {
 			for (const style of styles) {
 				const element = style.cloneNode(true);
-				returnIfDefined(shadowRoot).appendChild(element);
+				shadowRoot.appendChild(element);
 			}
+			shadowRoot.append(...globalStyles);
 		}
 
 		#execScripts(): void {
