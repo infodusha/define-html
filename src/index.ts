@@ -3,6 +3,7 @@ import { getGlobalStyles } from "./css-helpers.js";
 import {
 	commentMarker,
 	componentSelector,
+	hrefToSelector,
 	returnIfDefined,
 } from "./helpers.js";
 
@@ -15,9 +16,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 		const globalStyles = getGlobalStyles();
 		const components = await getComponents();
 		for (const [text, href] of components) {
+			const selector = hrefToSelector(href);
 			const definedElement = parser.parseFromString(text, "text/html");
 			customElements.define(
-				...createComponent(definedElement, href, globalStyles)
+				selector,
+				createComponent(definedElement, href, globalStyles)
 			);
 		}
 	} catch (err) {

@@ -4,7 +4,12 @@ import {
 	type GlobalStyle,
 } from "./css-helpers.js";
 import { type CleanupFn, executeScript } from "./execute-script.js";
-import { cloneNode, returnIfDefined, throwIfNotDefined } from "./helpers.js";
+import {
+	cloneNode,
+	hrefToSelector,
+	returnIfDefined,
+	throwIfNotDefined,
+} from "./helpers.js";
 
 interface AttributeChanged {
 	attributeChangedCallback(
@@ -20,17 +25,14 @@ interface Disconnected {
 
 export function createComponent(
 	definedElement: Document,
-	relativeTo: string,
+	href: string,
 	globalStyles: GlobalStyle[]
-): [string, typeof HTMLElement] {
+): typeof HTMLElement {
 	const template = returnIfDefined(
 		definedElement.querySelector("template"),
 		"Template is required"
 	);
-	const selector = returnIfDefined(relativeTo.split("/").pop()).replace(
-		/\.html$/,
-		""
-	);
+	const selector = hrefToSelector(href);
 	const useShadow = template.hasAttribute("data-shadow");
 
 	const styles: NodeListOf<HTMLStyleElement> =
@@ -225,7 +227,7 @@ export function createComponent(
 
 		#execScripts(): void {
 			for (const script of scripts) {
-				executeScript(script, relativeTo, this)
+				executeScript(script, href, this)
 					.then((cleanup) => cleanup && this.#cleanupFns.add(cleanup))
 					.catch(console.error);
 			}
@@ -260,7 +262,7 @@ export function createComponent(
 		}
 	}
 
-	return [selector, Component];
+	return Component;
 }
 
 function getUsedAttributes(

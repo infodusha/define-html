@@ -23,4 +23,8 @@ export function returnIfDefined<T>(
 	return value;
 }
 
+export function hrefToSelector(href: string): string {
+	return returnIfDefined(href.split("/").pop()).replace(/\.html$/, "");
+}
+
 export const componentSelector = `link[rel='preload'][as='fetch'][href$='.html']:not([${IGNORE_DATA_ATTRIBUTE}])`;

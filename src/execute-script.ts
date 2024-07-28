@@ -72,11 +72,12 @@ export async function executeScript(
 	const uuid = crypto.randomUUID();
 	window[scriptContextSymbol].set(uuid, context);
 	const jsCode = setContextForModuleScript(code, uuid, relativeTo);
-	const cleanup = () => window[scriptContextSymbol].delete(uuid);
 	const url = URL.createObjectURL(
 		new Blob([jsCode], { type: "text/javascript" })
 	);
 	await import(url);
-	URL.revokeObjectURL(url);
-	return cleanup;
+	return () => {
+		URL.revokeObjectURL(url);
+		window[scriptContextSymbol].delete(uuid);
+	};
 }
