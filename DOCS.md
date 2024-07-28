@@ -172,5 +172,3 @@ Inside script tag you can use `this` at the root level to reference the componen
  console.log(this.querySelector("h1").innerText);
 </script>
 ```
-
-You can set `type="module"` attribute to use ES modules.

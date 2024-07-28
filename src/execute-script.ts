@@ -1,4 +1,3 @@
-import { ErrorStackModifier } from "./error-stack-modifier.js";
 import { returnIfDefined } from "./helpers.js";
 
 // From https://github.com/antonkc/MOR/blob/main/matchJsImports.md
@@ -64,11 +63,12 @@ function setContextForModuleScript(
 	)}\n}).call(${component});`;
 }
 
-async function executeModule(
-	code: string,
+export async function executeScript(
+	element: HTMLScriptElement,
 	relativeTo: string,
 	context: Element
-): Promise<CleanupFn> {
+): Promise<CleanupFn | undefined> {
+	const code = await getCode(element, relativeTo);
 	const uuid = crypto.randomUUID();
 	window[scriptContextSymbol].set(uuid, context);
 	const jsCode = setContextForModuleScript(code, uuid, relativeTo);
@@ -79,40 +79,4 @@ async function executeModule(
 	await import(url);
 	URL.revokeObjectURL(url);
 	return cleanup;
-}
-
-function execute(code: string, context: Element): CleanupFn | undefined {
-	const fn = Function(code);
-	try {
-		const result = fn.call(context);
-		return typeof result === "function" ? result : undefined;
-	} catch (e) {
-		if (e instanceof Error) {
-			const stack = ErrorStackModifier.fromError(e);
-			const currentPlaceStackLength = ErrorStackModifier.current().items.length;
-			const cutSize = currentPlaceStackLength - 2;
-			const newStack = new ErrorStackModifier(stack.items.slice(0, -cutSize));
-			const selector = context?.tagName.toLowerCase();
-			if (selector) {
-				newStack.applyToRow((r) => r.replace("Component.eval", selector));
-			}
-			console.error(newStack.toString());
-		} else {
-			console.error(e);
-		}
-	}
-	return undefined;
-}
-
-export async function executeScript(
-	element: HTMLScriptElement,
-	relativeTo: string,
-	context: Element
-): Promise<CleanupFn | undefined> {
-	const code = await getCode(element, relativeTo);
-	const isModule = element.getAttribute("type") === "module";
-	if (isModule) {
-		return await executeModule(code, relativeTo, context);
-	}
-	return execute(code, context);
 }
