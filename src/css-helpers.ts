@@ -36,11 +36,3 @@ export function appendCssLink(cssText: string): void {
 	document.head.appendChild(element);
 	URL.revokeObjectURL(url);
 }
-
-export function applyGlobalStyles(styles: HTMLStyleElement[]): void {
-	for (const style of styles) {
-		const element = cloneNode(style);
-		element.removeAttribute("data-global");
-		document.head.appendChild(element);
-	}
-}

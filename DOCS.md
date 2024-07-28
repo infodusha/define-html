@@ -67,8 +67,6 @@ You can have multiple style tags in one file.
 
 Inside you can use [:host](https://developer.mozilla.org/en-US/docs/Web/CSS/:host) pseudo-class to target the component itself.
 
-You can use `data-global` attribute to make style global.
-
 ## Attributes
 
 Inside your template you can use attributes to read component values itself (value would be set as child text):
