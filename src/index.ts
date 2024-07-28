@@ -21,7 +21,9 @@ async function fetchFromLinks(): Promise<void> {
 
 async function defineHtml(link: HTMLLinkElement): Promise<void> {
 	const href = returnIfDefined(link.getAttribute("href"));
-	const response = await fetch(href);
+	const response = await fetch(href).catch((err) => {
+		throw new Error(`Unable to load ${href}`, { cause: err });
+	});
 	const text = await response.text();
 	const definedElement = parser.parseFromString(text, "text/html");
 	customElements.define(...createComponent(definedElement, href));

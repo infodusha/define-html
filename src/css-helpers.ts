@@ -5,7 +5,7 @@ const hostRe = /:host(\((.+)\))?/g;
 export function getEncapsulatedCss(
 	template: HTMLTemplateElement,
 	style: HTMLStyleElement,
-	selector: string,
+	selector: string
 ): string {
 	const unique = `data-${selector}-css`;
 	if (!style.sheet) {
@@ -18,7 +18,7 @@ export function getEncapsulatedCss(
 			continue;
 		}
 		for (const element of template.content.querySelectorAll(
-			rule.selectorText,
+			rule.selectorText
 		)) {
 			element.setAttribute(unique, "");
 		}
