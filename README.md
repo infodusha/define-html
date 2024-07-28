@@ -44,6 +44,10 @@ So later you can use include your template with:
 
 [Read the docs](./DOCS.md)
 
+## Troubleshooting
+
+For the framework to work, you either need to use some static server (e.g. [Live Server for VS Code](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)) or use a compiler (see below).
+
 ## Compiler (optional)
 
 Additionally, you can compile your components inside your pages.
