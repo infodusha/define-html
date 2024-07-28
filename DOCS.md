@@ -37,11 +37,9 @@ You can use `<template>` tag to define your component:
 </template>
 ```
 
-That is the only required element. That tag can be uses only once per file.
+That is the only required element. The tag can be used only once per file.
 
-You can use `<template data-selector="app-root">` to set selector for the component. If not specified, filename is used.
-
-Must include dash `-` and be unique.
+Filename is used as a selector for the component. It must include dash `-` and be unique.
 
 You can use `<template data-shadow="closed">` to enable [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM#encapsulation_from_css).
 
@@ -72,7 +70,7 @@ Inside you can use [:host](https://developer.mozilla.org/en-US/docs/Web/CSS/:hos
 Inside your template you can use attributes to read component values itself (value would be set as child text):
 
 ```html
-<template data-selector="app-title">
+<template>
  <h1 data-attr="title"></h1>
 </template>
 ```
@@ -112,7 +110,7 @@ You can use `data-if-equal` attribute along with `data-if` to check if attribute
 You can use `<slot>` tag to define a place for elements, that are nested inside the component:
 
 ```html
-<template data-selector="app-card">
+<template>
  <div class="card">
    <slot></slot>
  </div>
@@ -130,7 +128,7 @@ So later you can use it like this:
 You can use `<slot name="header">` to have multiple slots:
 
 ```html
-<template data-selector="app-card">
+<template>
  <slot name="header"></slot>
  <div class="card">
    <slot></slot>

@@ -27,11 +27,10 @@ export function createComponent(
 		definedElement.querySelector("template"),
 		"Template is required"
 	);
-	const filename = returnIfDefined(relativeTo.split("/").pop()).replace(
+	const selector = returnIfDefined(relativeTo.split("/").pop()).replace(
 		/\.html$/,
 		""
 	);
-	const selector = template.getAttribute("data-selector") ?? filename;
 	const useShadow = template.hasAttribute("data-shadow");
 
 	const styles: NodeListOf<HTMLStyleElement> =
