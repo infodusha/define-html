@@ -4,23 +4,18 @@ import {
 	type GlobalStyle,
 } from "./css-helpers.js";
 import { type CleanupFn, executeScript } from "./execute-script.js";
-import {
-	cloneNode,
-	hrefToSelector,
-	returnIfDefined,
-	throwIfNotDefined,
-} from "./helpers.js";
+import { cloneNode, hrefToSelector, returnIfDefined } from "./helpers.js";
+import { OptionalIf } from "./optional.js";
 
-interface AttributeChanged {
-	attributeChangedCallback(
+interface Lifecycle {
+	connectedCallback?: () => void;
+	disconnectedCallback?: () => void;
+	adoptedCallback?: () => void;
+	attributeChangedCallback?: (
 		name: string,
 		oldValue: string | null,
 		newValue: string | null
-	): void;
-}
-
-interface Disconnected {
-	disconnectedCallback(): void;
+	) => void;
 }
 
 export function createComponent(
@@ -30,15 +25,13 @@ export function createComponent(
 ): typeof HTMLElement {
 	const template = returnIfDefined(
 		definedElement.querySelector("template"),
-		"Template is required"
+		"<template> is required"
 	);
 	const selector = hrefToSelector(href);
 	const useShadow = template.hasAttribute("data-shadow");
 
-	const styles: NodeListOf<HTMLStyleElement> =
-		definedElement.querySelectorAll("style");
-	const scripts: NodeListOf<HTMLScriptElement> =
-		definedElement.querySelectorAll("script");
+	const styles = definedElement.querySelectorAll("style");
+	const scripts = definedElement.querySelectorAll("script");
 
 	if (!useShadow) {
 		for (const style of styles) {
@@ -49,19 +42,13 @@ export function createComponent(
 
 	const usedAttributes = getUsedAttributes(template, ["data-attr", "data-if"]);
 
-	class Component
-		extends HTMLElement
-		implements AttributeChanged, Disconnected
-	{
-		static get observedAttributes(): string[] {
-			return usedAttributes;
-		}
+	class Component extends HTMLElement implements Lifecycle {
+		static readonly observedAttributes = usedAttributes;
 
 		readonly #attrElements: HTMLElement[] = [];
 		readonly #attrDefaults = new WeakMap<HTMLElement, ChildNode[]>();
 
-		readonly #optionalElements: HTMLElement[] = [];
-		readonly #optionalMarkers = new WeakMap<HTMLElement, Comment>();
+		readonly #optionalElements: OptionalIf[] = [];
 
 		readonly #cleanupFns = new Set<CleanupFn>();
 
@@ -69,10 +56,7 @@ export function createComponent(
 			super();
 			const content = cloneNode(template.content);
 			this.#attrElements = Array.from(content.querySelectorAll("[data-attr]"));
-			this.#optionalElements = Array.from(
-				content.querySelectorAll("[data-if]")
-			);
-			this.#initOptionality();
+			this.#optionalElements = this.#initOptionality(content);
 			this.#attach(content);
 			this.#setAttrs();
 			this.#makeProperties();
@@ -95,38 +79,16 @@ export function createComponent(
 			this.#applyOptionality(name);
 		}
 
-		#initOptionality(): void {
-			for (const element of this.#optionalElements) {
-				if (!this.#isElementVisible(element)) {
-					this.#hideOptional(element);
-				}
-			}
-		}
+		#initOptionality(content: DocumentFragment): OptionalIf[] {
+			const optionalElements = Array.from(
+				content.querySelectorAll("[data-if]")
+			).map((el) => new OptionalIf(el));
 
-		#hideOptional(element: HTMLElement): void {
-			if (this.#optionalMarkers.has(element)) {
-				// Already hidden
-				return;
+			for (const element of optionalElements) {
+				element.update(this.attributes);
 			}
-			const text = ` data-if="${element.getAttribute("data-if")}" `;
-			const marker = document.createComment(text);
-			element.before(marker);
-			this.#optionalMarkers.set(element, marker);
-			element.remove();
-		}
 
-		#isElementVisible(element: Element): boolean {
-			const name = element.getAttribute("data-if");
-			throwIfNotDefined(name);
-			const hasIfNot = element.hasAttribute("data-if-not");
-			const hasIfEqual = element.hasAttribute("data-if-equal");
-			const hasAttr = this.hasAttribute(name);
-			if (hasIfEqual) {
-				const value = returnIfDefined(element.getAttribute("data-if-equal"));
-				const isEqual = this.getAttribute(name) === value;
-				return hasIfNot ? !isEqual : isEqual;
-			}
-			return hasIfNot ? !hasAttr : hasAttr;
+			return optionalElements;
 		}
 
 		#attach(content: DocumentFragment): void {
@@ -199,21 +161,10 @@ export function createComponent(
 
 		#applyOptionality(name: string): void {
 			const optionalForElements = this.#optionalElements.filter(
-				(element) => element.getAttribute("data-if") === name
+				(element) => element.attr === name
 			);
 			for (const element of optionalForElements) {
-				if (this.#isElementVisible(element)) {
-					const marker = this.#optionalMarkers.get(element);
-					if (!marker) {
-						// Already visible
-						continue;
-					}
-					marker.after(element);
-					marker.remove();
-					this.#optionalMarkers.delete(element);
-				} else {
-					this.#hideOptional(element);
-				}
+				element.update(this.attributes);
 			}
 		}
 
@@ -268,7 +219,7 @@ export function createComponent(
 function getUsedAttributes(
 	template: HTMLTemplateElement,
 	attributeNames: string[]
-): string[] {
+): readonly string[] {
 	return attributeNames
 		.flatMap((attributeName) => {
 			return Array.from(
