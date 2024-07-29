@@ -176,7 +176,7 @@ export function createComponent(
 		#execScripts(): void {
 			for (const script of scripts) {
 				executeScript(script, href, this)
-					.then((cleanup) => cleanup && this.#cleanupFns.add(cleanup))
+					.then((cleanup) => this.#cleanupFns.add(cleanup))
 					.catch(console.error);
 			}
 		}

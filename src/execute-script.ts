@@ -67,7 +67,7 @@ export async function executeScript(
 	element: HTMLScriptElement,
 	relativeTo: string,
 	context: Element
-): Promise<CleanupFn | undefined> {
+): Promise<CleanupFn> {
 	const code = await getCode(element, relativeTo);
 	const uuid = crypto.randomUUID();
 	window[scriptContextSymbol].set(uuid, context);
