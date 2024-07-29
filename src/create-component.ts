@@ -93,10 +93,7 @@ export function createComponent(
 
 		#attach(content: DocumentFragment): void {
 			if (useShadow) {
-				const mode =
-					(template.getAttribute("data-shadow") as ShadowRootMode | "") ||
-					"open";
-				const shadowRoot = this.attachShadow({ mode });
+				const shadowRoot = this.attachShadow({ mode: "open" });
 				shadowRoot.appendChild(content);
 				this.#setShadowStyles(shadowRoot);
 			} else {

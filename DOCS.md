@@ -41,9 +41,9 @@ That is the only required element. The tag can be used only once per file.
 
 Filename is used as a selector for the component. It must include dash `-` and be unique.
 
-You can use `<template data-shadow="closed">` to enable [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM#encapsulation_from_css).
+You can use `<template data-shadow>` to enable [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM#encapsulation_from_css).
 
-Can be `open`, `closed`. If not specified, no shadow DOM is used, but styles are still encapsulated.
+If not set, no shadow DOM is used, but styles are still encapsulated.
 
 ## Styles
 
