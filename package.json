@@ -42,7 +42,7 @@
 	"author": "infodusha",
 	"license": "Apache-2.0",
 	"devDependencies": {
-		"@biomejs/biome": "1.8.3",
+		"@biomejs/biome": "^1.8.3",
 		"@playwright/test": "^1.45.3",
 		"http-server": "^14.1.1",
 		"typescript": "~5.5.4"
