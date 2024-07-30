@@ -1,10 +1,6 @@
-import {
-	appendCssLink,
-	getEncapsulatedCss,
-	type GlobalStyle,
-} from "./css-helpers.js";
+import type { GlobalStyle } from "./css-helpers.js";
 import { type CleanupFn, executeScript } from "./execute-script.js";
-import { cloneNode, hrefToSelector, returnIfDefined } from "./helpers.js";
+import { cloneNode, returnIfDefined } from "./helpers.js";
 import { OptionalIf } from "./optional.js";
 
 interface Lifecycle {
@@ -27,18 +23,9 @@ export function createComponent(
 		definedElement.querySelector("template"),
 		"<template> is required"
 	);
-	const selector = hrefToSelector(href);
-	const useShadow = template.hasAttribute("data-shadow");
 
 	const styles = definedElement.querySelectorAll("style");
 	const scripts = definedElement.querySelectorAll("script");
-
-	if (!useShadow) {
-		for (const style of styles) {
-			const cssText = getEncapsulatedCss(template, style, selector);
-			appendCssLink(cssText);
-		}
-	}
 
 	const usedAttributes = getUsedAttributes(template, ["data-attr", "data-if"]);
 
@@ -92,53 +79,9 @@ export function createComponent(
 		}
 
 		#attach(content: DocumentFragment): void {
-			if (useShadow) {
-				const shadowRoot = this.attachShadow({ mode: "open" });
-				shadowRoot.appendChild(content);
-				this.#setShadowStyles(shadowRoot);
-			} else {
-				this.#emulateSlots(content);
-				this.appendChild(content);
-			}
-		}
-
-		#emulateSlots(content: DocumentFragment): void {
-			const defaultSlot = content.querySelector("slot:not([name])");
-			const childNodes = Array.from(this.childNodes);
-			this.innerHTML = "";
-			const visitedSlots = new WeakSet<Element>();
-
-			for (const node of childNodes) {
-				if (node.nodeType === Node.ELEMENT_NODE) {
-					const element = node as Element;
-					if (element.hasAttribute("slot")) {
-						const slotName = returnIfDefined(element.getAttribute("slot"));
-						const slot = content.querySelector(`slot[name=${slotName}]`);
-						if (!slot) {
-							console.warn(
-								`No slot with name "${slotName}" found for ${selector}`
-							);
-							continue;
-						}
-						slot.before(node);
-						visitedSlots.add(slot);
-						continue;
-					}
-				}
-				if (!defaultSlot) {
-					console.warn(`No default slot found for ${selector}`);
-					continue;
-				}
-				defaultSlot.before(node);
-				visitedSlots.add(defaultSlot);
-			}
-
-			for (const slot of content.querySelectorAll("slot")) {
-				if (!visitedSlots.has(slot)) {
-					slot.before(...slot.childNodes);
-				}
-				slot.remove();
-			}
+			const shadowRoot = this.attachShadow({ mode: "open" });
+			shadowRoot.appendChild(content);
+			this.#setShadowStyles(shadowRoot);
 		}
 
 		#applyAttr(name: string, value: string | null): void {
@@ -207,6 +150,14 @@ export function createComponent(
 					configurable: true,
 				});
 			}
+		}
+
+		querySelector(selector: string): Element | null {
+			return returnIfDefined(this.shadowRoot).querySelector(selector);
+		}
+
+		querySelectorAll(selector: string): NodeListOf<Element> {
+			return returnIfDefined(this.shadowRoot).querySelectorAll(selector);
 		}
 	}
 
