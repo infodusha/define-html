@@ -23,7 +23,6 @@ test("opens example page", async ({ page }) => {
 });
 
 test("app-header has content", async ({ page }) => {
-	const appHeader = page.locator("tag=app-root").first();
-	const appHeaderHtml = await appHeader.innerHTML();
-	expect(appHeaderHtml.length).toBeGreaterThan(0);
+	const appHeader = page.locator("app-header").first();
+	await expect(appHeader).toContainText("define-html example");
 });
