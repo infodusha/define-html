@@ -1,5 +1,36 @@
 # Changelog
 
+## [3.0.0](https://github.com/infodusha/define-html/compare/v2.6.0...v3.0.0) (2024-07-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* shadow DOM is always used
+* data-shadow is always open
+* data-selector is obsolete, just always use filename
+* shadow dom now has global styles inside
+* no need to write type for component scripts
+* instead of data-global just paste your styles and script into the page
+
+### Features
+
+* add appendStyle method ([8a02f5b](https://github.com/infodusha/define-html/commit/8a02f5b7daca802e076ffe821662d26f998ab18f))
+* all scripts are ES modules now ([519c8d7](https://github.com/infodusha/define-html/commit/519c8d72f55da02026da2d9e5c91dcf617af1e0d))
+* data-selector is not used anymore ([0b7ee2d](https://github.com/infodusha/define-html/commit/0b7ee2d93dd7fe4944b5e505cf8e177bf6f00b11))
+* data-shadow don't need a value anymore ([11a7e73](https://github.com/infodusha/define-html/commit/11a7e7376d4fadc426df872d89a5e50314fb668a))
+* group component styles ([ca9b396](https://github.com/infodusha/define-html/commit/ca9b396dfd52570ae58cb73e26582c93447c86eb))
+* no more data-global attribute ([b99d785](https://github.com/infodusha/define-html/commit/b99d785a936d6653e7ce5cdcb7163e460cbb9df3))
+* **runtime:** handle load errors ([1ca4834](https://github.com/infodusha/define-html/commit/1ca48343e8f1493f068b4559bde2300a9078aa52))
+* shadow DOM is always used ([4cf5a49](https://github.com/infodusha/define-html/commit/4cf5a49c99211a0ecaa97d9558bd05d3590cb6a4))
+* updates + shadow works as expected ([9eb730f](https://github.com/infodusha/define-html/commit/9eb730f9c731c3eed596bd203f3548c2568cb771))
+
+
+### Bug Fixes
+
+* copy global styles ([baf3d25](https://github.com/infodusha/define-html/commit/baf3d25ca9b53500f32ac40f1c4e2f7de6f183f6))
+* tests ([359f8ea](https://github.com/infodusha/define-html/commit/359f8ea524bff7ceb5f616f84155bf65ac2c291f))
+* update package json ([f405ce7](https://github.com/infodusha/define-html/commit/f405ce7604402d1fc44210a531dd5a1d1f471218))
+
 ## [2.6.0](https://github.com/infodusha/define-html/compare/v2.5.0...v2.6.0) (2024-07-22)
 
 
