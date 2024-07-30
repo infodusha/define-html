@@ -22,9 +22,9 @@
 
 <script>
 	const counterRef = this.querySelector(".counter");
-	let count = Number(counterRef.innerText);
+	let count = Number(counterRef.textContent);
 
 	setInterval(() => {
-		counterRef.innerText = ++count;
+		counterRef.textContent = ++count;
 	}, 1000);
 </script>

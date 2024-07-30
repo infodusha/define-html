@@ -27,7 +27,7 @@ async function getCode(
 		const res = await fetch(url);
 		return res.text();
 	}
-	return element.innerText;
+	return element.textContent ?? "";
 }
 
 function changeRelativeUrl(href: string, relativeTo: string): string {

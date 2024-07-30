@@ -167,6 +167,6 @@ Inside script tag you can use `this` at the root level to reference the componen
 </template>
 
 <script>
- console.log(this.querySelector("h1").innerText);
+ console.log(this.querySelector("h1").textContent);
 </script>
 ```

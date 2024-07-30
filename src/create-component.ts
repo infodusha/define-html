@@ -150,7 +150,7 @@ export function createComponent(
 					element.textContent = value;
 				} else {
 					const children = this.#attrDefaults.get(element) ?? [];
-					element.innerText = "";
+					element.textContent = "";
 					element.append(...children);
 				}
 			}
