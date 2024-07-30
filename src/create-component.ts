@@ -1,4 +1,3 @@
-import type { GlobalStyle } from "./css-helpers.js";
 import { type CleanupFn, executeScript } from "./execute-script.js";
 import { cloneNode, returnIfDefined } from "./helpers.js";
 import { OptionalIf } from "./optional.js";
@@ -17,7 +16,7 @@ interface Lifecycle {
 export function createComponent(
 	definedElement: Document,
 	href: string,
-	globalStyles: GlobalStyle[]
+	globalStyles: HTMLLinkElement[]
 ): typeof HTMLElement {
 	const template = returnIfDefined(
 		definedElement.querySelector("template"),
@@ -109,11 +108,13 @@ export function createComponent(
 		}
 
 		#setShadowStyles(shadowRoot: ShadowRoot) {
+			const group = document.createElement("style");
+			group.setAttribute("data-define-html", "");
 			for (const style of styles) {
-				const element = style.cloneNode(true);
-				shadowRoot.appendChild(element);
+				group.append(cloneNode(style));
 			}
-			shadowRoot.append(...globalStyles);
+			group.append(...globalStyles.map((el) => cloneNode(el)));
+			shadowRoot.append(group);
 		}
 
 		#execScripts(): void {
