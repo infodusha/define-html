@@ -23,7 +23,7 @@ export function createComponent(
 		"<template> is required"
 	);
 
-	const styles = definedElement.querySelectorAll("style");
+	const styles = [...definedElement.querySelectorAll("style"), ...globalStyles];
 	const scripts = definedElement.querySelectorAll("script");
 
 	const usedAttributes = getUsedAttributes(template, ["data-attr", "data-if"]);
@@ -37,6 +37,12 @@ export function createComponent(
 		readonly #optionalElements: OptionalIf[] = [];
 
 		readonly #cleanupFns = new Set<CleanupFn>();
+
+		readonly #styleGroup = document.createElement("style");
+
+		get shadowRoot(): ShadowRoot {
+			return returnIfDefined(super.shadowRoot);
+		}
 
 		constructor() {
 			super();
@@ -78,9 +84,12 @@ export function createComponent(
 		}
 
 		#attach(content: DocumentFragment): void {
-			const shadowRoot = this.attachShadow({ mode: "open" });
-			shadowRoot.appendChild(content);
-			this.#setShadowStyles(shadowRoot);
+			this.attachShadow({ mode: "open" });
+			this.shadowRoot.appendChild(content);
+
+			for (const style of styles) {
+				this.appendStyle(style);
+			}
 		}
 
 		#applyAttr(name: string, value: string | null): void {
@@ -105,16 +114,6 @@ export function createComponent(
 			for (const element of optionalForElements) {
 				element.update(this.attributes);
 			}
-		}
-
-		#setShadowStyles(shadowRoot: ShadowRoot) {
-			const group = document.createElement("style");
-			group.setAttribute("data-define-html", "");
-			for (const style of styles) {
-				group.append(cloneNode(style));
-			}
-			group.append(...globalStyles.map((el) => cloneNode(el)));
-			shadowRoot.append(group);
 		}
 
 		#execScripts(): void {
@@ -153,12 +152,19 @@ export function createComponent(
 			}
 		}
 
+		appendStyle(style: HTMLLinkElement | HTMLStyleElement) {
+			if (this.#styleGroup.childElementCount === 0) {
+				this.shadowRoot.append(this.#styleGroup);
+			}
+			this.#styleGroup.append(cloneNode(style));
+		}
+
 		querySelector(selector: string): Element | null {
-			return returnIfDefined(this.shadowRoot).querySelector(selector);
+			return this.shadowRoot.querySelector(selector);
 		}
 
 		querySelectorAll(selector: string): NodeListOf<Element> {
-			return returnIfDefined(this.shadowRoot).querySelectorAll(selector);
+			return this.shadowRoot.querySelectorAll(selector);
 		}
 	}
 
