@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.1.0](https://github.com/infodusha/define-html/compare/v3.0.0...v3.1.0) (2025-01-03)
+
+
+### Features
+
+* upgrade bun ([d772503](https://github.com/infodusha/define-html/commit/d77250366d244fbae890e549e587b9d81f254515))
+
+
+### Bug Fixes
+
+* add bun types for dev ([92d0a48](https://github.com/infodusha/define-html/commit/92d0a48909b35291bf67d416ab4e935c36c14129))
+
 ## [3.0.0](https://github.com/infodusha/define-html/compare/v2.6.0...v3.0.0) (2024-07-30)
 
 
