@@ -1,14 +1,24 @@
 #!/usr/bin/env node
 
 import fg from "fast-glob";
-import * as cheerio from "cheerio";
+import {
+	Browser,
+	Window,
+	HTMLTemplateElement,
+	DocumentFragment,
+	Document,
+} from "happy-dom";
 
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, relative, resolve } from "node:path";
+import { dirname, relative, resolve, basename } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 
-import { commentMarker, componentSelector, returnIfDefined } from "./helpers";
+import {
+	componentSelector,
+	returnIfDefined,
+	throwIfNotDefined,
+} from "./helpers";
 
 const RUNTIME_FILE = "define-html.js";
 
@@ -34,14 +44,17 @@ const files = await fg("**/*.html", {
 	ignore: ["**/node_modules/**", `${DIST_DIR}/**`],
 });
 
-const components = new Set<string>();
+const components = new Map<string, HTMLTemplateElement>();
 const pages = new Set<string>();
 
 for (const path of files) {
 	const text = await readFile(path, "utf8");
-	const $ = cheerio.load(text);
+	const browser = new Browser();
+	const page = browser.newPage();
+	page.content = text;
+	const document = page.mainFrame.document;
 
-	const links = $(componentSelector);
+	const links = document.querySelectorAll(componentSelector);
 	if (links.length === 0) {
 		if (!components.has(path)) {
 			pages.add(path);
@@ -52,22 +65,48 @@ for (const path of files) {
 	console.log(`${path} has ${links.length} components`);
 
 	for (const link of links) {
-		const component = relative(dirname(path), link.attribs.href);
-		components.add(component);
-		pages.delete(component);
+		const component = relative(dirname(path), link.getAttribute("href"));
 		const text = await readFile(component, "utf8");
-		$(`<!--${commentMarker}${component}\n${text}-->`).insertBefore(link);
+		const window = new Window();
+		const doc = window.document;
+		doc.body.innerHTML = text;
+		const template = doc.body.querySelector("template");
+		throwIfNotDefined(template, "<template> is required");
+		const style = doc.body.querySelector("style");
+		const script = doc.body.querySelector("script");
+		template.setAttribute("shadowrootmode", "open");
+		if (style) {
+			template.prepend(style);
+		}
+		if (script) {
+			template.append(script);
+		}
+		link.remove();
+		pages.delete(component);
+		components.set(component, template);
 	}
 
-	$(componentSelector).remove();
+	function fillDocument(doc: DocumentFragment | Document) {
+		for (const [component, template] of components) {
+			const selector = basename(component).replace(".html", "");
+			doc.querySelectorAll(selector).forEach((el) => {
+				fillDocument(template.content);
+				el.prepend(template.cloneNode(true));
+			});
+		}
+	}
+
+	fillDocument(document);
 
 	if (COPY_RUNTIME) {
 		const runtime_path = relative(dirname(path), RUNTIME_FILE);
-		$(`script[src$='define-html']`).attr("src", runtime_path);
+		document
+			.querySelector(`script[src$='define-html']`)!
+			.setAttribute("src", runtime_path);
 	}
 
 	const out = await prepareSave(path);
-	await writeFile(out, $.html());
+	await writeFile(out, page.content);
 }
 
 for (const page of pages) {
