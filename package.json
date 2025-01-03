@@ -42,13 +42,16 @@
 	"author": "infodusha",
 	"license": "Apache-2.0",
 	"devDependencies": {
-		"@biomejs/biome": "^1.8.3",
-		"@playwright/test": "^1.45.3",
+		"@biomejs/biome": "^1.9.4",
+		"@playwright/test": "^1.49.1",
 		"http-server": "^14.1.1",
-		"typescript": "~5.5.4"
+		"typescript": "~5.7.2"
 	},
 	"dependencies": {
-		"cheerio": "^1.0.0-rc.12",
+		"cheerio": "^1.0.0",
 		"fast-glob": "^3.3.2"
-	}
+	},
+	"trustedDependencies": [
+		"@biomejs/biome"
+	]
 }
